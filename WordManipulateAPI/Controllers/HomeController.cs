@@ -13,7 +13,7 @@ namespace WordManipulateAPI.Controllers
     {
         public ActionResult Index()
         {
-            ViewBag.Title = "Home Page - test";
+            ViewBag.Title = "Home Page - testing";
 
             return View();
         }
