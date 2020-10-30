@@ -27,6 +27,51 @@ namespace WordManipulateAPI.Models.EPFM
                 serviceFactory.GetRemoteService<IObjectService>(DemoServiceContext, "core", domain);
         }
 
+
+        #region CMS Methods
+
+        public DataPackage CMSUploadMethod(string dmsfolderpath, string localfilepath)
+        {
+            if (!File.Exists(localfilepath))
+            {
+                throw new Exception("Test file: " + localfilepath + " does not exist");
+            }
+            ObjectIdentity objIdentity = new ObjectIdentity(DefaultRepository);
+            DataObject dataObject = new DataObject(objIdentity, "dm_document"); //eifx_deliverable_doc // ecs_correspondence
+            PropertySet properties = dataObject.Properties;
+            properties.Set("object_name", "MyImage" + System.DateTime.Now.Ticks);
+            properties.Set("title", "MyImage");
+            properties.Set("a_content_type", "gif");
+            dataObject.Contents.Add(new FileContent(Path.GetFullPath(localfilepath), "gif"));
+
+
+            ObjectPath objectPath = new ObjectPath(dmsfolderpath);
+            ObjectIdentity sampleFolderIdentity = new ObjectIdentity(objectPath, DefaultRepository);
+            ReferenceRelationship sampleFolderRelationship = new ReferenceRelationship();
+            sampleFolderRelationship.Name = Relationship.RELATIONSHIP_FOLDER;
+            sampleFolderRelationship.Target = sampleFolderIdentity;
+            sampleFolderRelationship.TargetRole = Relationship.ROLE_PARENT;
+            dataObject.Relationships.Add(sampleFolderRelationship);
+
+
+            OperationOptions operationOptions = null;
+            DataPackage dataPackage = objectService.Create(new DataPackage(dataObject), operationOptions);
+            string object_ = dataPackage.DataObjects[0].Identity.GetValueAsString();
+            return dataPackage;
+        }
+
+
+        public ObjectIdentity CMSCreateFolder(string dmsfolderpath)
+        {
+            //dmsfolderpath is the entire folder path in EPFM.
+            //To create a folder 'B' inside /Temp/CMS/A then the path should be /Temp/CMS/A/B
+            ObjectPath objPath = new ObjectPath(dmsfolderpath);
+            return objectService.CreatePath(objPath, DefaultRepository);
+        }
+
+        #endregion
+
+
         public void ObjServiceCopy(String sourceObjectPathString, String targetLocPathString)
         {
             // identify the object to copy

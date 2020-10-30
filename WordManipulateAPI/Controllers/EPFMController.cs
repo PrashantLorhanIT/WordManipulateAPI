@@ -244,5 +244,10 @@ namespace WordManipulateAPI.Controllers
 
             return keywords;
         }
+
+
+        // For Archive methods, please refer ObjectServiceDemo.cs under Models folder and look for region named 'CMS Methods'
+        //These methods were provided by Shashi, we need to call them logically whenever any folder needs to be created in EPFM under any cabinet OR upload 
+        //any file inside any folder.
     }
 }
