@@ -82,22 +82,22 @@
       <HintPath>..\packages\Dynamsoft.DotNet.TWAIN.8.1.3\lib\net40\Dynamsoft.WPF.Viewer.dll</HintPath>
     </Reference>
     <Reference Include="Emc.Documentum.FS.DataModel.Core">
-      <HintPath>D:\saphal\dfs\MyDependencies\Emc.Documentum.FS.DataModel.Core.dll</HintPath>
+      <HintPath>references\Emc.Documentum.FS.DataModel.Core.dll</HintPath>
     </Reference>
     <Reference Include="Emc.Documentum.FS.DataModel.Shared">
-      <HintPath>D:\saphal\dfs\MyDependencies\Emc.Documentum.FS.DataModel.Shared.dll</HintPath>
+      <HintPath>references\Emc.Documentum.FS.DataModel.Shared.dll</HintPath>
     </Reference>
     <Reference Include="Emc.Documentum.FS.Runtime">
-      <HintPath>D:\saphal\dfs\MyDependencies\Emc.Documentum.FS.Runtime.dll</HintPath>
+      <HintPath>references\Emc.Documentum.FS.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Emc.Documentum.FS.Runtime.Ucf">
-      <HintPath>D:\saphal\dfs\MyDependencies\Emc.Documentum.FS.Runtime.Ucf.dll</HintPath>
+      <HintPath>references\Emc.Documentum.FS.Runtime.Ucf.dll</HintPath>
     </Reference>
     <Reference Include="Emc.Documentum.FS.Services.Core">
-      <HintPath>D:\saphal\dfs\MyDependencies\Emc.Documentum.FS.Services.Core.dll</HintPath>
+      <HintPath>references\Emc.Documentum.FS.Services.Core.dll</HintPath>
     </Reference>
     <Reference Include="Emc.Documentum.FS.Services.Search">
-      <HintPath>D:\saphal\dfs\MyDependencies\Emc.Documentum.FS.Services.Search.dll</HintPath>
+      <HintPath>references\Emc.Documentum.FS.Services.Search.dll</HintPath>
     </Reference>
     <Reference Include="HtmlRenderer, Version=1.5.0.5, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\HtmlRenderer.Core.1.5.0.5\lib\net45\HtmlRenderer.dll</HintPath>
