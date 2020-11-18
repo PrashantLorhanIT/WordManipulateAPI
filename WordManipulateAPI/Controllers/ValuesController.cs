@@ -44,19 +44,10 @@ namespace WordManipulateAPI.Controllers
             HttpResponseMessage response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
             try
             {
-               
+                var pdf = Pdf.From(templateData.HTMLContent).Content();
+                System.IO.File.WriteAllBytes(@templateData.FullFileName, pdf);
 
-                Byte[] res = null;
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    var pdf = TheArtOfDev.HtmlRenderer.PdfSharp.PdfGenerator.GeneratePdf(templateData.HTMLContent, PdfSharp.PageSize.A4);
-                    pdf.Save(ms);
-                    res = ms.ToArray();
-                }
-                System.IO.File.WriteAllBytes(@templateData.FullFileName, res);
 
-                var pdf1 = Pdf.From(templateData.HTMLContent).OfSize(PaperSize.A4).Portrait().Content();
-                System.IO.File.WriteAllBytes(@templateData.FullFileName, pdf1);
             }
             catch (Exception ex)
             {
