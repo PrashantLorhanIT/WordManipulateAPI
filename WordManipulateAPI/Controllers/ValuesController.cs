@@ -111,8 +111,9 @@ namespace WordManipulateAPI.Controllers
                 iTextSharp.text.pdf.PdfContentByte cb = null;
                 iTextSharp.text.pdf.PdfContentByte cb2 = null;
                 iTextSharp.text.pdf.PdfWriter writer = null;
-                iTextSharp.text.pdf.BaseFont bf = GetFont("PTSans-Regular");
-               var fonts = iTextSharp.text.FontFactory.RegisteredFonts;
+                iTextSharp.text.pdf.BaseFont bf = null;
+                FileInfo path = new FileInfo(ConfigurationManager.AppSettings["FontPath"]);
+                iTextSharp.text.FontFactory.RegisterDirectory(path.Directory.FullName);
                 if (System.IO.File.Exists(SourceFile))
                 {
                     PdfReader pReader = new PdfReader(SourceFile);
@@ -140,9 +141,9 @@ namespace WordManipulateAPI.Controllers
                             cb.Rectangle(rect.Left, rect.Bottom, rect.Width, rect.Height);
                             cb.Fill();
                             cb2.SetColorFill(iTextSharp.text.BaseColor.BLACK);
-                            bf = GetFont("PTSans-Regular");
+                            bf = GetFont();
                             //bf = BaseFont.CreateFont(BaseFont.TIMES_BOLD, BaseFont.CP1252 , BaseFont.NOT_EMBEDDED);
-                            cb2.SetFontAndSize(bf, 11);
+                            cb2.SetFontAndSize(bf, 9);
                             cb2.BeginText();
                             cb2.ShowTextAligned(0, replacingText, rect.Left, rect.Bottom + 2, 0);
                             cb2.EndText();
@@ -159,9 +160,9 @@ namespace WordManipulateAPI.Controllers
             }
         }
 
-public static BaseFont GetFont(string fontName)
+public static BaseFont GetFont()
 {
-    return BaseFont.CreateFont(@"D:\Sachin\Projects\ER Project Documents - Aptiva CMS\CMS Addon 10312020\WordManipulateAPI\WordManipulateAPI\fonts\" + fontName + ".ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
+    return BaseFont.CreateFont(ConfigurationManager.AppSettings["FontPath"], BaseFont.CP1252, BaseFont.EMBEDDED);
 }
 
 private void ManipulatePdf(String src, String dest)
@@ -201,7 +202,7 @@ private void ManipulatePdf(String src, String dest)
             rectangle.BackgroundColor = iTextSharp.text.BaseColor.WHITE;
             pbover.Rectangle(rectangle);
 
-            BaseFont bf = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+            BaseFont bf = BaseFont.CreateFont(ConfigurationManager.AppSettings["FontPath"], BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
 
             //Font font = new Font();
             // font.Size = 45;
@@ -303,7 +304,7 @@ private void ManipulatePdf(String src, String dest)
 
                 foreach (var chunk in locationalResult)
                 {
-                    if (ThisLineChunks.Count > 0)
+                    if (ThisLineChunks.Count > 0 && !chunk.SameLine(ThisLineChunks.Last()))
                     {
                         if (sb.ToString().IndexOf(pSearchString, pStrComp) > -1)
                         {
@@ -371,12 +372,15 @@ private void ManipulatePdf(String src, String dest)
                                     }
                                 }
                             }
-                            sb.Clear();
-                            ThisLineChunks.Clear();
                         }
+                        sb.Clear();
+                        ThisLineChunks.Clear();
                     }
-                    ThisLineChunks.Add(chunk);
-                    sb.Append(chunk.text);
+                    if (!String.IsNullOrEmpty(chunk.text.Trim()))
+                    {
+                        ThisLineChunks.Add(chunk);
+                        sb.Append(chunk.text);
+                    }
                 }
                 return FoundMatches;
             }

@@ -437,6 +437,7 @@
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
     <Content Include="OCR\tessdata\eng.traineddata" />
     <Content Include="fonts\PTSans-Regular.ttf" />
+    <Content Include="fonts\PTSans-Bold.ttf" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
