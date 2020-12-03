@@ -291,6 +291,12 @@ private void ManipulatePdf(String src, String dest)
                 return sb.ToString();
             }
 
+            static string UnicodeToUTF8(string from)
+            {
+                var bytes = Encoding.UTF8.GetBytes(from);
+                return new string(bytes.Select(b => (char)b).ToArray());
+            }
+
             public List<iTextSharp.text.Rectangle> GetTextLocations(string pSearchString, System.StringComparison pStrComp)
             {
                 List<iTextSharp.text.Rectangle> FoundMatches = new List<iTextSharp.text.Rectangle>();
@@ -306,6 +312,9 @@ private void ManipulatePdf(String src, String dest)
                 {
                     if (ThisLineChunks.Count > 0 && !chunk.SameLine(ThisLineChunks.Last()))
                     {
+                        var input = sb.ToString().Replace((char)173, '-');
+                        sb.Clear();
+                        sb.Append(input);
                         if (sb.ToString().IndexOf(pSearchString, pStrComp) > -1)
                         {
                             string sLine = sb.ToString();
@@ -375,6 +384,8 @@ private void ManipulatePdf(String src, String dest)
                         }
                         sb.Clear();
                         ThisLineChunks.Clear();
+                        if (FoundMatches.Count() > 0)
+                            break;
                     }
                     if (!String.IsNullOrEmpty(chunk.text.Trim()))
                     {
@@ -388,6 +399,8 @@ private void ManipulatePdf(String src, String dest)
             private iTextSharp.text.Rectangle GetRectangleFromText(TextChunk FirstChunk, TextChunk LastChunk, string pSearchString,
               string sTextinChunks, int iFromChar, int iToChar, System.StringComparison pStrComp)
             {
+                sTextinChunks = sTextinChunks.Replace((char)173, '-');
+
                 float LineRealWidth = LastChunk.PosRight - FirstChunk.PosLeft;
 
                 float LineTextWidth = GetStringWidth(sTextinChunks, LastChunk.curFontSize,
