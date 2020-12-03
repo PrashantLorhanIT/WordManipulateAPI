@@ -320,15 +320,37 @@ namespace WordManipulateAPI.Models.EPFM
                     string doctitle = docProperties.Get("title").GetValueAsString();
                     string docNumber = docProperties.Get("object_name").GetValueAsString();
                     //Console.WriteLine("RepositoryName: " + repName + " ,Document: " + objectId + " ,Name:" + docName + " ,Subject:" + docsubject);
+                    string revision = docProperties.Get("eif_revision").GetValueAsString();
+                    string creationDate = docProperties.Get("r_creation_date").GetValueAsString();
+                    string package = docProperties.Get("er_package_name").GetValueAsString();
+                    string issueReason = docProperties.Get("eif_issue_reason").GetValueAsString();
+                    string contract = docProperties.Get("er_contract_number").GetValueAsString();
+                    string originator = docProperties.Get("eif_originator").GetValueAsString();
+                    string discipline = docProperties.Get("eif_discipline").GetValueAsString();
+                    string acceptanceCode = docProperties.Get("eif_acceptance_code").GetValueAsString();
+                    string actualSubDate = docProperties.Get("er_actual_sub_date").GetValueAsString();
 
-                    documentModels.Add(new DocumentModel() { ObjectId = objectId, ObjectName = docName + "." + Extension, DocumentTitle = doctitle, DocumentNumber = docNumber  });
+                    documentModels.Add(new DocumentModel() { ObjectId = objectId, ObjectName = docName + "." + Extension, DocumentTitle = doctitle, DocumentNumber = docNumber,
+                                                            Revision = revision, AcceptanceCode = acceptanceCode, ActualSubDate = actualSubDate, Contract = contract,
+                                                            CreationDate = creationDate, Discipline = discipline, IssueReason = issueReason, Originator = originator, Package = package
+                                                            });
 
                 }
             }
             catch (Exception ex)
             {
 
-                documentModels.Add(new DocumentModel() { ObjectId = "1", ObjectName = ex.Message, DocumentTitle = ex.StackTrace , DocumentNumber = "XXXX-1FD-345-QWE" });
+                documentModels.Add(new DocumentModel() { ObjectId = "1", ObjectName = ex.Message, DocumentTitle = ex.StackTrace , DocumentNumber = "XXXX-1FD-345-QWE",
+                                                            Revision = "Rev983475",
+                                                            AcceptanceCode = "TRRTT",
+                                                            ActualSubDate = "21-09-2020",
+                                                            Contract = "P34242-Contract",
+                                                            CreationDate = "21-09-2020",
+                                                            Discipline = "FR8530498",
+                                                            IssueReason = "Approved",
+                                                            Originator = "Mark Boyle",
+                                                            Package = "DFGH54938"
+                                                        });
             }
 
             return documentModels;

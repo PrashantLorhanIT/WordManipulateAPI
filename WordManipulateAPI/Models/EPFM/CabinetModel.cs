@@ -16,6 +16,15 @@ namespace WordManipulateAPI.Models.EPFM
         public string ObjectName { get; set; }
         public string DocumentNumber { get; set; }
         public string DocumentTitle { get; set; }
+        public string Revision { get; set; }
+        public string CreationDate { get; set; }
+        public string Package { get; set; }
+        public string IssueReason { get; set; }
+        public string Contract { get; set; }
+        public string Originator { get; set; }
+        public string Discipline { get; set; }
+        public string AcceptanceCode { get; set; }
+        public string ActualSubDate { get; set; }
     }
 
     public class KeywordModel
