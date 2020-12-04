@@ -148,9 +148,9 @@ namespace WordManipulateAPI.Controllers
                             cb2.ShowTextAligned(0, replacingText, rect.Left, rect.Bottom + 2, 0);
                             cb2.EndText();
                             cb2.Fill();
-                            break;
+                            //break;
                         }
-                      break;
+                      //break;
                     }
                     pReader.Close();
                 }
@@ -384,8 +384,8 @@ private void ManipulatePdf(String src, String dest)
                         }
                         sb.Clear();
                         ThisLineChunks.Clear();
-                        if (FoundMatches.Count() > 0)
-                            break;
+                        //if (FoundMatches.Count() > 0)
+                        //    break;
                     }
                     if (!String.IsNullOrEmpty(chunk.text.Trim()))
                     {
