@@ -15,19 +15,23 @@ namespace WordManipulateAPI.Models.EPFM
 {
     public class SearchServiceDemo: DemoBase
     {
-        private ISearchService searchService;
+        private IQueryService searchService;
+        private ISearchService searchService1;
         
         public SearchServiceDemo(String defaultRepository, String secondaryRepository, String userName, String password, String domain)
             : base(defaultRepository, secondaryRepository, userName, password)
         {
             ServiceFactory serviceFactory = ServiceFactory.Instance;
             searchService =
+                serviceFactory.GetRemoteService<IQueryService>(DemoServiceContext, "core", domain);
+
+            searchService1 =
                 serviceFactory.GetRemoteService<ISearchService>(DemoServiceContext, "core", domain);
         }
 
         public List<Repository> RepositoryList()
         {
-            List<Repository> repositoryList = searchService.GetRepositoryList(null);
+            List<Repository> repositoryList = searchService1.GetRepositoryList(null);
             foreach (Repository r in repositoryList)
             {
                 Console.WriteLine(r.Name);
@@ -135,149 +139,161 @@ namespace WordManipulateAPI.Models.EPFM
             try
             {
                 //string queryString = "select dm_document.r_object_id, dm_document.subject, dm_document.a_content_type,dm_document.object_name,dm_format.dos_extension from dm_document,dm_format where  dm_document.a_content_type = dm_format.name";
-                string queryString = " select r_object_id ,title ,object_name,r_creation_date"
-+ ", r_modify_date, eif_date_due, eif_acceptance_code, eif_area, eif_revision"
-+ ", eif_issue_reason, eif_discipline, eif_originator, eif_type_of_doc, eif_project_ref"
-+ ", er_actual_sub_date, er_wbs_level3, er_wbs_level4, er_package_name, er_contract_number"
-+ ", dm_document.subject, dm_document.a_content_type, dm_format.dos_extension from eifx_deliverable_doc,dm_document,dm_format where eifx_deliverable_doc.r_object_id = dm_document.r_object_id and dm_document.a_content_type = dm_format.name ";
+                //string queryString = " select r_object_id, eifx_deliverable_doc.r_modify_date, eifx_deliverable_doc.r_creation_date, object_name, title, eif_revision, er_package_name, eif_issue_reason, er_contract_number, eif_originator, eif_discipline, eif_acceptance_code, er_actual_sub_date from eifx_deliverable_doc ";
 
-//                string queryString = " select eifx_deliverable_doc.r_object_id ,eifx_deliverable_doc.title ,eifx_deliverable_doc.object_name,eifx_deliverable_doc.r_creation_date"
-//+ ",eifx_deliverable_doc.r_modify_date,eifx_deliverable_doc.eif_date_due,eifx_deliverable_doc.eif_acceptance_code,eifx_deliverable_doc.eif_area,eifx_deliverable_doc.eif_revision"
-//+ ",eifx_deliverable_doc.eif_issue_reason,eifx_deliverable_doc.eif_discipline,eifx_deliverable_doc.eif_originator,eifx_deliverable_doc.eif_type_of_doc,eifx_deliverable_doc.eif_project_ref"
-//+ ",eifx_deliverable_doc.er_actual_sub_date,eifx_deliverable_doc.er_wbs_level3,eifx_deliverable_doc.er_wbs_level4,eifx_deliverable_doc.er_package_name,eifx_deliverable_doc.er_contract_number"
-//+ ",dm_document.subject,dm_document.a_content_type,dm_format.dos_extensionfrom eifx_deliverable_doc,dm_document,dm_format ";
+
+                string queryString = " select r_object_id ,title ,object_name,dm_document.r_creation_date as creationdate"
+                + ", dm_document.r_modify_date as modifydate, eif_date_due, eif_acceptance_code, eif_area, eif_revision"
+                + ", eif_issue_reason, eif_discipline, eif_originator, eif_type_of_doc, eif_project_ref"
+                + ", er_actual_sub_date, er_wbs_level3, er_wbs_level4, er_package_name, er_contract_number"
+                + ", dm_document.subject, dm_document.a_content_type, dm_format.dos_extension from eifx_deliverable_doc,dm_document,dm_format where eifx_deliverable_doc.r_object_id = dm_document.r_object_id and dm_document.a_content_type = dm_format.name ";
+
+                //                string queryString = " select eifx_deliverable_doc.r_object_id ,eifx_deliverable_doc.title ,eifx_deliverable_doc.object_name,eifx_deliverable_doc.r_creation_date"
+                //+ ",eifx_deliverable_doc.r_modify_date,eifx_deliverable_doc.eif_date_due,eifx_deliverable_doc.eif_acceptance_code,eifx_deliverable_doc.eif_area,eifx_deliverable_doc.eif_revision"
+                //+ ",eifx_deliverable_doc.eif_issue_reason,eifx_deliverable_doc.eif_discipline,eifx_deliverable_doc.eif_originator,eifx_deliverable_doc.eif_type_of_doc,eifx_deliverable_doc.eif_project_ref"
+                //+ ",eifx_deliverable_doc.er_actual_sub_date,eifx_deliverable_doc.er_wbs_level3,eifx_deliverable_doc.er_wbs_level4,eifx_deliverable_doc.er_package_name,eifx_deliverable_doc.er_contract_number"
+                //+ ",dm_document.subject,dm_document.a_content_type,dm_format.dos_extensionfrom eifx_deliverable_doc,dm_document,dm_format ";
                 //where eifx_deliverable_doc.r_object_id = dm_document.r_object_id and dm_document.a_content_type = dm_format.name 
-                if (!String.IsNullOrEmpty(search.ContractNumber))
+
+                if (!string.IsNullOrEmpty(search.ContractNumber))
                 {
-                    queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.er_contract_number like '%" + search.ContractNumber + "%' ";
+                    queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " er_contract_number like '%" + search.ContractNumber + "%' ";
                 }
 
-                if (!String.IsNullOrEmpty(search.DocumentNumber))
+                if (!string.IsNullOrEmpty(search.DocumentNumber))
                 {
-                    queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.object_name like '%" + search.DocumentNumber + "%' ";
+                    queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " object_name like '%" + search.DocumentNumber + "%' ";
                 }
 
-                if (!String.IsNullOrEmpty(search.DocumentTitle))
+                if (!string.IsNullOrEmpty(search.DocumentTitle))
                 {
-                    queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.title like '%" + search.DocumentTitle + "%' ";
+                    queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " title like '%" + search.DocumentTitle + "%' ";
                 }
 
-                if (!String.IsNullOrEmpty(search.PackageName))
+                if (!string.IsNullOrEmpty(search.PackageName))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.er_package_name like '%" + search.PackageName + "%' ";
                 }
 
-                if (!String.IsNullOrEmpty(search.DocumentType))
+                if (!string.IsNullOrEmpty(search.DocumentType))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_type_of_doc like '%" + search.DocumentType + "%' ";
                 }
 
-                if (!String.IsNullOrEmpty(search.DocumentAcceptanceStatus))
+                if (!string.IsNullOrEmpty(search.DocumentAcceptanceStatus))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_acceptance_code like '%" + search.DocumentAcceptanceStatus + "%' ";
                 }
 
-                if (!String.IsNullOrEmpty(search.Originator))
+                if (!string.IsNullOrEmpty(search.Originator))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_originator like '%" + search.Originator + "%' ";
                 }
 
-                if (!String.IsNullOrEmpty(search.Area))
+                if (!string.IsNullOrEmpty(search.Area))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_area like '%" + search.Area + "%' ";
                 }
 
-                if (!String.IsNullOrEmpty(search.Revision))
+                if (!string.IsNullOrEmpty(search.Revision))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_revision like '%" + search.Revision + "%' ";
                 }
 
-                if (!String.IsNullOrEmpty(search.Discipline))
+                if (!string.IsNullOrEmpty(search.Discipline))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_discipline like '%" + search.Discipline + "%' ";
                 }
 
-                //if (!String.IsNullOrEmpty(search.Filename))
-                //{
-                //    queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " er_contract_number like '%" + search.Filename + "%' ";
-                //}
+                ////if (!string.isnullorempty(search.filename))
+                ////{
+                ////    querystring = querystring + (querystring.contains("where") ? " and " : " where ") + " er_contract_number like '%" + search.filename + "%' ";
+                ////}
 
-                if (!String.IsNullOrEmpty(search.ProjectReference))
+                if (!string.IsNullOrEmpty(search.ProjectReference))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_project_ref like '%" + search.ProjectReference + "%' ";
                 }
 
-                if (!String.IsNullOrEmpty(search.IssueReason))
+                if (!string.IsNullOrEmpty(search.IssueReason))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_issue_reason like '%" + search.IssueReason + "%' ";
                 }
 
-                //if (!String.IsNullOrEmpty(search.SuperSearch))
-                //{
-                //    queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " er_contract_number like '" + search.SuperSearch + "' ";
-                //}
+                ////if (!string.isnullorempty(search.supersearch))
+                ////{
+                ////    querystring = querystring + (querystring.contains("where") ? " and " : " where ") + " er_contract_number like '" + search.supersearch + "' ";
+                ////}
 
-                //if (!String.IsNullOrEmpty(search.Location))
-                //{
-                //    queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " er_contract_number like '" + search.Location + "' ";
-                //}
+                ////if (!string.isnullorempty(search.location))
+                ////{
+                ////    querystring = querystring + (querystring.contains("where") ? " and " : " where ") + " er_contract_number like '" + search.location + "' ";
+                ////}
 
-                if ( (!String.IsNullOrEmpty(search.DateRangeDay)) && (!String.IsNullOrEmpty(search.DateRangeType)))
+                if ((!String.IsNullOrEmpty(search.DateRangeDay)) && (!String.IsNullOrEmpty(search.DateRangeType)))
                 {
                     string type = "";
-                    if (search.DateRangeType == "Modified Date")
+                    if (search.DateRangeType.ToLower() == "modified date")
                     {
-                        type = "r_modify_date";
+                        type = "dm_document.r_modify_date";
                     }
-                    else if (search.DateRangeType == "Created Date")
+                    else if (search.DateRangeType.ToLower() == "created date")
                     {
-                        type = "r_creation_date";
+                        type = "dm_document.r_creation_date";
                     }
-                    else if (search.DateRangeType == "yyMSG_Date_Submittedyy")
+                    else if (search.DateRangeType.ToLower() == "yymsg_date_submittedyy")
                     {
                         type = " er_actual_sub_date";
                     }
-                    else if (search.DateRangeType == "yyMSG_DueDateyy")
+                    else if (search.DateRangeType.ToLower() == "yymsg_duedateyy")
                     {
                         type = "eif_date_due";
                     }
 
 
-                    if (search.DateRangeDay == "Today")
+                    if (search.DateRangeDay.ToLower() == "today")
                     {
-                        type = type + " between " + DateTime.Today.ToString("MM/DD/yyyy 00:00:00") + " and " + DateTime.Today.ToString("MM/DD/yyyy 23:59:00");
+                        type = type + " >= DATE('" + DateTime.Today.ToString("MM/dd/yyyy 00:00:00") + "' , 'MM/dd/yyyy HI:mm:ss') and "+ type +" <= DATE('" + DateTime.Today.ToString("MM/dd/yyyy 23:59:00") + "','MM/dd/yyyy HI:mm:ss')";
+                        //type = type + " between " + DateTime.Today.ToString("MM/dd/yyyy 00:00:00") + " and " + DateTime.Today.ToString("MM/dd/yyyy 23:59:00");
                     }
-                    else if(search.DateRangeDay == "Yesterday")
+                    else if (search.DateRangeDay.ToLower() == "yesterday")
                     {
-                        type = type + " between " + DateTime.Today.AddDays(-1).ToString("MM/DD/yyyy 00:00:00") + " and " + DateTime.Today.AddDays(-1).ToString("MM/DD/yyyy 23:59:00");
+                        type = type + " >= DATE('" + DateTime.Today.AddDays(-1).ToString("MM/dd/yyyy 00:00:00") + "' , 'MM/dd/yyyy HI:mm:ss') and "+ type +" <= DATE('" + DateTime.Today.AddDays(-1).ToString("MM/dd/yyyy 23:59:00") + "','MM/dd/yyyy HI:mm:ss')";
+                        //type = type + " between " + DateTime.Today.AddDays(-1).ToString("MM/dd/yyyy 00:00:00") + " and " + DateTime.Today.AddDays(-1).ToString("MM/dd/yyyy 23:59:00");
                     }
-                    else if (search.DateRangeDay == "Last 7 days")
+                    else if (search.DateRangeDay.ToLower() == "last 7 days")
                     {
-                        type = type + " between " + DateTime.Today.AddDays(-7).ToString("MM/DD/yyyy 00:00:00") + " and " + DateTime.Today.AddDays(0).ToString("MM/DD/yyyy 23:59:00");
+                        type = type + " >= DATE('" + DateTime.Today.AddDays(-7).ToString("MM/dd/yyyy 00:00:00") + "' , 'MM/dd/yyyy HI:mm:ss') and "+ type +" <= DATE('" + DateTime.Today.AddDays(0).ToString("MM/dd/yyyy 23:59:00") + "','MM/dd/yyyy HI:mm:ss')";
+                        //type = type + " between " + DateTime.Today.AddDays(-7).ToString("MM/dd/yyyy 00:00:00") + " and " + DateTime.Today.AddDays(0).ToString("MM/dd/yyyy 23:59:00");
                     }
-                    else if (search.DateRangeDay == "Last 30 days")
+                    else if (search.DateRangeDay.ToLower() == "last 30 days")
                     {
-                        type = type + " between " + DateTime.Today.AddDays(-30).ToString("MM/DD/yyyy 00:00:00") + " and " + DateTime.Today.AddDays(0).ToString("MM/DD/yyyy 23:59:00");
+                        type = type + " >= DATE('" + DateTime.Today.AddDays(-30).ToString("MM/dd/yyyy 00:00:00") + "' , 'MM/dd/yyyy HI:mm:ss') and "+ type +" <= DATE('" + DateTime.Today.AddDays(0).ToString("MM/dd/yyyy 23:59:00") + "','MM/dd/yyyy HI:mm:ss')";
+                        //type = type + " between " + DateTime.Today.AddDays(-30).ToString("MM/dd/yyyy 00:00:00") + " and " + DateTime.Today.AddDays(0).ToString("MM/dd/yyyy 23:59:00");
                     }
-                    else if (search.DateRangeDay == "Last 90 days")
+                    else if (search.DateRangeDay.ToLower() == "last 90 days")
                     {
-                        type = type + " between " + DateTime.Today.AddDays(-90).ToString("MM/DD/yyyy 00:00:00") + " and " + DateTime.Today.AddDays(0).ToString("MM/DD/yyyy 23:59:00");
+                        type = type + " >= DATE('" + DateTime.Today.AddDays(-90).ToString("MM/dd/yyyy 00:00:00") + "' , 'MM/dd/yyyy HI:mm:ss') and "+ type +" <= DATE('" + DateTime.Today.AddDays(0).ToString("MM/dd/yyyy 23:59:00") + "','MM/dd/yyyy HI:mm:ss')";
+                        //type = type + " between " + DateTime.Today.AddDays(-90).ToString("MM/dd/yyyy 00:00:00") + " and " + DateTime.Today.AddDays(0).ToString("MM/dd/yyyy 23:59:00");
                     }
-                    else if (search.DateRangeDay == "Between")
+                    else if (search.DateRangeDay.ToLower() == "between")
                     {
-                        type = type + " between " + search.DateRangeFrom.ToString("MM/DD/yyyy 00:00:00") + " and " + search.DateRangeTo.ToString("MM/DD/yyyy 23:59:00");
+                        type = type + " >= DATE('" + search.DateRangeFrom.ToString("MM/dd/yyyy 00:00:00") + "' , 'MM/dd/yyyy HI:mm:ss') and "+ type +" <= DATE('" + search.DateRangeTo.ToString("MM/dd/yyyy 23:59:00") + "','MM/dd/yyyy HI:mm:ss')";
                     }
-                    else if (search.DateRangeDay == "Before")
+                    else if (search.DateRangeDay.ToLower() == "before")
                     {
-                        type = type + " <= " + search.DateRangeTo.ToString("MM/DD/yyyy 23:59:00");
+                        type = type +" <= DATE('" + search.DateRangeTo.ToString("MM/dd/yyyy 23:59:00") + "','MM/dd/yyyy HI:mm:ss')";
+                        //type = type + " <= " + search.DateRangeTo.ToString("MM/dd/yyyy 23:59:00");
                     }
-                    else if (search.DateRangeDay == "After")
+                    else if (search.DateRangeDay.ToLower() == "after")
                     {
-                        type = type + " >= " + search.DateRangeFrom.ToString("MM/DD/yyyy 00:00:00");
+                        type = type +" >= DATE('" + search.DateRangeTo.ToString("MM/dd/yyyy 00:00:00") + "','MM/dd/yyyy HI:mm:ss')";
+                        //type = type + " >= " + search.DateRangeFrom.ToString("MM/dd/yyyy 00:00:00");
                     }
-                    else if (search.DateRangeDay == "On")
+                    else if (search.DateRangeDay.ToLower() == "on")
                     {
-                        type = type + " between " + search.DateRangeFrom.ToString("MM/DD/yyyy 00:00:00") + " and " + search.DateRangeFrom.ToString("MM/DD/yyyy 23:59:00");
+                        type = type + " >= DATE('" + search.DateRangeFrom.ToString("MM/dd/yyyy 00:00:00") + "' , 'MM/dd/yyyy HI:mm:ss') and "+ type +" <= DATE('" + search.DateRangeFrom.ToString("MM/dd/yyyy 23:59:00") + "','MM/dd/yyyy HI:mm:ss')";
+                        //type = type + " between " + search.DateRangeFrom.ToString("MM/dd/yyyy 00:00:00") + " and " + search.DateRangeFrom.ToString("MM/dd/yyyy 23:59:00");
                     }
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + type;
                 }
@@ -286,7 +302,7 @@ namespace WordManipulateAPI.Models.EPFM
 
 
                 int startingIndex = 0;
-                int maxResults = 60;
+                int maxResults = 20;
                 int maxResultsPerSource = 20;
 
                 PassthroughQuery q = new PassthroughQuery();
@@ -298,7 +314,11 @@ namespace WordManipulateAPI.Models.EPFM
                                                               maxResultsPerSource);
                 queryExec.CacheStrategyType = CacheStrategyType.NO_CACHE_STRATEGY;
 
+                Logger.WriteLog("SearchDocuments 301 " + q);
+
+                
                 queryResult = searchService.Execute(q, queryExec, null);
+                Logger.WriteLog("SearchDocuments 302 " + q);
 
                 QueryStatus queryStatus = queryResult.QueryStatus;
                 RepositoryStatusInfo repStatusInfo = queryStatus.RepositoryStatusInfos[0];
@@ -310,30 +330,73 @@ namespace WordManipulateAPI.Models.EPFM
                 //Console.WriteLine("Query returned result successfully.");
                 DataPackage dp = queryResult.DataPackage;
                 //Console.WriteLine("DataPackage contains " + dp.DataObjects.Count + " objects.");
+                Logger.WriteLog("SearchDocuments 322 " + dp.DataObjects.Count);
                 foreach (DataObject dObj in dp.DataObjects)
                 {
                     PropertySet docProperties = dObj.Properties;
+                    //foreach (var item in docProperties.Properties)
+                    //{
+                    //    Logger.WriteLog("DataObjects " + item.Name);
+                    //}     
+
                     String objectId = dObj.Identity.GetValueAsString();
                     String docName = docProperties.Get("object_name").GetValueAsString();
-                    String Extension = docProperties.Get("dos_extension").GetValueAsString();
+                    String Extension = "PDF"; //docProperties.Get("dos_extension").GetValueAsString();
                     string repName = dObj.Identity.RepositoryName;
+
                     string doctitle = docProperties.Get("title").GetValueAsString();
+
                     string docNumber = docProperties.Get("object_name").GetValueAsString();
+
                     //Console.WriteLine("RepositoryName: " + repName + " ,Document: " + objectId + " ,Name:" + docName + " ,Subject:" + docsubject);
                     string revision = docProperties.Get("eif_revision").GetValueAsString();
-                    string creationDate = docProperties.Get("r_creation_date").GetValueAsString();
+
+                    string creationDate = docProperties.Get("creationdate").GetValueAsString();
+
+                    string modifiedDate = docProperties.Get("modifydate").GetValueAsString();
+
                     string package = docProperties.Get("er_package_name").GetValueAsString();
+
                     string issueReason = docProperties.Get("eif_issue_reason").GetValueAsString();
+
                     string contract = docProperties.Get("er_contract_number").GetValueAsString();
+
                     string originator = docProperties.Get("eif_originator").GetValueAsString();
+
                     string discipline = docProperties.Get("eif_discipline").GetValueAsString();
+
                     string acceptanceCode = docProperties.Get("eif_acceptance_code").GetValueAsString();
+
                     string actualSubDate = docProperties.Get("er_actual_sub_date").GetValueAsString();
 
+                    try
+                    {
+                        Logger.WriteLog("SearchDocuments Before er_actual_sub_date Date ");
+
+                        Logger.WriteLog("SearchDocuments Before er_actual_sub_date Date 1 ");
+                        //Logger.WriteLog("SearchDocuments r_creation_date " + docProperties.Get("r_creation_date").ToString());
+                        Logger.WriteLog("SearchDocuments er_actual_sub_date 2" + docProperties.Get("er_actual_sub_date").GetValueAsString());
+                        Logger.WriteLog("SearchDocuments after er_actual_sub_date Date ");
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.WriteLog("SearchDocuments r_creation_date Exception" + ex.Message);
+
+                    }
+
+
                     documentModels.Add(new DocumentModel() { ObjectId = objectId, ObjectName = docName + "." + Extension, DocumentTitle = doctitle, DocumentNumber = docNumber,
-                                                            Revision = revision, AcceptanceCode = acceptanceCode, ActualSubDate = actualSubDate, Contract = contract,
-                                                            CreationDate = creationDate, Discipline = discipline, IssueReason = issueReason, Originator = originator, Package = package
-                                                            });
+                                                            Revision = revision,
+                                                            AcceptanceCode = acceptanceCode,
+                                                            ActualSubDate = actualSubDate,
+                                                            Contract = contract,
+                                                            CreationDate = creationDate,
+                                                            ModifiedDate = modifiedDate,
+                                                            Discipline = discipline,
+                                                            IssueReason = issueReason,
+                                                            Originator = originator,
+                                                            Package = package
+                    });
 
                 }
             }
@@ -346,11 +409,15 @@ namespace WordManipulateAPI.Models.EPFM
                                                             ActualSubDate = "21-09-2020",
                                                             Contract = "P34242-Contract",
                                                             CreationDate = "21-09-2020",
+                                                            ModifiedDate = "21-09-2020",
                                                             Discipline = "FR8530498",
                                                             IssueReason = "Approved",
                                                             Originator = "Mark Boyle",
                                                             Package = "DFGH54938"
-                                                        });
+                });
+                Logger.WriteLog("SearchDocuments searchServiceDemo " + ex.InnerException.ToString() + Environment.NewLine +
+                    ex.GetBaseException().ToString() + Environment.NewLine +
+                    ex.GetType().ToString());
             }
 
             return documentModels;

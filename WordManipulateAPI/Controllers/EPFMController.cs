@@ -16,78 +16,79 @@ using System.Security.Claims;
 using System.Web.Http.Cors;
 using Newtonsoft.Json;
 
+
 namespace WordManipulateAPI.Controllers
 {
     [EnableCors(origins: "*", headers: "*", methods: "*", SupportsCredentials = true)]
     [RoutePrefix("api/EPFM")]
-    [Authorize]
+    //[Authorize]
     public class EPFMController : ApiController
     {
         //// GET api/values
-        //[HttpGet]
-        //[Route("GetCabinets")]
-        //public IEnumerable<CabinetModel> GetCabinets()
-        //{
-        //    string result = ActionContext.Request.Headers.Authorization.ToString();
-        //    IEnumerable<CabinetModel> cabinets = null;
-        //    try
-        //    {
-        //        String repository = ConfigurationManager.AppSettings["EPFMRepository"];
-        //        String userName = ConfigurationManager.AppSettings["EPFMUsername"];
-        //        String password = ConfigurationManager.AppSettings["EPFMPassword"];
-        //        String address = ConfigurationManager.AppSettings["EPFMAddress"];
+        [HttpGet]
+        [Route("GetCabinets")]
+        public IEnumerable<CabinetModel> GetCabinets()
+        {
+            string result = ""; // ActionContext.Request.Headers.Authorization.ToString();
+            IEnumerable<CabinetModel> cabinets = null;
+            try
+            {
+                String repository = ConfigurationManager.AppSettings["EPFMRepository"];
+                String userName = ConfigurationManager.AppSettings["EPFMUsername"];
+                String password = ConfigurationManager.AppSettings["EPFMPassword"];
+                String address = ConfigurationManager.AppSettings["EPFMAddress"];
 
-        //        //String repository = "er_dev_epfm_01";
-        //        //String userName = "svc.cmsadmindev";
-        //        //String password = "Fc$YqK96d8%C";
-        //        //String address = "http://er-kdc-ddcpas01:8082/dfs/services";
+                //String repository = "er_dev_epfm_01";
+                //String userName = "svc.cmsadmindev";
+                //String password = "Fc$YqK96d8%C";
+                //String address = "http://er-kdc-ddcpas01:8082/dfs/services";
 
-        //        result = "Setting Context";
-        //        MyQueryService t = new MyQueryService();
-        //        t.setContext(userName, password, address, repository);
-        //        cabinets = t.callQueryServiceCabinet();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        result = result + "Got exception" + ex.StackTrace;
-        //        throw new Exception(result);
-        //    }
+                result = "Setting Context";
+                MyQueryService t = new MyQueryService();
+                t.setContext(userName, password, address, repository);
+                cabinets = t.callQueryServiceCabinet();
+            }
+            catch (Exception ex)
+            {
+                result = result + "Got exception" + ex.StackTrace;
+                throw new Exception(result);
+            }
 
-        //    return cabinets;
-        //}
+            return cabinets;
+        }
 
 
-        //[HttpGet]
-        //[Route("GetDocuments")]
-        //public IEnumerable<CabinetModel> GetDocuments(string cabinetid)
-        //{
-        //    string result = "load";
-        //    IEnumerable<CabinetModel> cabinets = null;
-        //    try
-        //    {
-        //        String repository = ConfigurationManager.AppSettings["EPFMRepository"];
-        //        String userName = ConfigurationManager.AppSettings["EPFMUsername"];
-        //        String password = ConfigurationManager.AppSettings["EPFMPassword"];
-        //        String address = ConfigurationManager.AppSettings["EPFMAddress"];
+        [HttpGet]
+        [Route("GetDocuments")]
+        public IEnumerable<CabinetModel> GetDocuments(string cabinetid)
+        {
+            string result = "load";
+            IEnumerable<CabinetModel> cabinets = null;
+            try
+            {
+                String repository = ConfigurationManager.AppSettings["EPFMRepository"];
+                String userName = ConfigurationManager.AppSettings["EPFMUsername"];
+                String password = ConfigurationManager.AppSettings["EPFMPassword"];
+                String address = ConfigurationManager.AppSettings["EPFMAddress"];
 
-        //        //String repository = "er_dev_epfm_01";
-        //        //String userName = "svc.cmsadmindev";
-        //        //String password = "Fc$YqK96d8%C";
-        //        //String address = "http://er-kdc-ddcpas01:8082/dfs/services";
+                //String repository = "er_dev_epfm_01";
+                //String userName = "svc.cmsadmindev";
+                //String password = "Fc$YqK96d8%C";
+                //String address = "http://er-kdc-ddcpas01:8082/dfs/services";
 
-        //        result = "Setting Context";
-        //        MyQueryService t = new MyQueryService();
-        //        t.setContext(userName, password, address, repository);
-        //        cabinets = t.callQueryServiceDocument(cabinetid);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        result = result + "Got exception" + ex.StackTrace;
-        //        throw new Exception(result);
-        //    }
+                result = "Setting Context";
+                MyQueryService t = new MyQueryService();
+                t.setContext(userName, password, address, repository);
+                cabinets = t.callQueryServiceDocument(cabinetid);
+            }
+            catch (Exception ex)
+            {
+                result = result + "Got exception" + ex.StackTrace;
+                throw new Exception(result);
+            }
 
-        //    return cabinets;
-        //}
+            return cabinets;
+        }
 
         [HttpPost]
         [Route("SearchDocuments")]
@@ -97,24 +98,27 @@ namespace WordManipulateAPI.Controllers
             IEnumerable<DocumentModel> documents = null;
             try
             {
-                string username, password;
-                (username, password) =  SecurityHelper.GetCredentials(User.Identity as ClaimsIdentity);
+                //string username, password;
+                //(username, password) =  SecurityHelper.GetCredentials(User.Identity as ClaimsIdentity);
 
                 String repository = ConfigurationManager.AppSettings["EPFMRepository"];
-                //String username = ConfigurationManager.AppSettings["EPFMUsername"];
-                //String password = ConfigurationManager.AppSettings["EPFMPassword"];
+                String username = ConfigurationManager.AppSettings["EPFMUsername"];
+                String password = ConfigurationManager.AppSettings["EPFMPassword"];
                 String address = ConfigurationManager.AppSettings["EPFMAddress"];
 
-              
 
-                
+
+
+                Logger.WriteLog("SearchDocuments Log details " + username + Environment.NewLine + password + Environment.NewLine + address);
 
                 SearchServiceDemo searchServiceDemo = new SearchServiceDemo(repository, null, username, password, address);
+                Logger.WriteLog("SearchDocuments searchServiceDemo " + searchServiceDemo.ToString());
                 documents = searchServiceDemo.SimplePassthroughQueryDocumentWithPath_New(searchModel);
             }
             catch (Exception ex)
             {
                 result = result + "Got exception" + ex.StackTrace;
+                Logger.WriteLog("SearchDocuments searchServiceDemo " + result);
                 throw new Exception(result);
             }
 
