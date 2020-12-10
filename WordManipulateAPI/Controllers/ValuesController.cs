@@ -120,6 +120,7 @@ namespace WordManipulateAPI.Controllers
                     for (int page = 1; page <= pReader.NumberOfPages; page++)
                     {
                         myLocationTextExtractionStrategy strategy = new myLocationTextExtractionStrategy();
+                        string currentText = "";
                         cb = stamper.GetOverContent(page);
                         cb2 = stamper.GetOverContent(page);
                         //Send some data contained in PdfContentByte, looks like the first is always cero for me and the second 100,
@@ -128,7 +129,7 @@ namespace WordManipulateAPI.Controllers
                         strategy.UndercontentHorizontalScaling = (int)cb.HorizontalScaling;
                         //It's not really needed to get the text back, but we have to call this line ALWAYS,
                         //because it triggers the process that will get all chunks from PDF into our strategy Object
-                        string currentText = PdfTextExtractor.GetTextFromPage(pReader, page, strategy);
+                        currentText = PdfTextExtractor.GetTextFromPage(pReader, page, strategy);
                         //The real getter process starts in the following line
                         List<iTextSharp.text.Rectangle> MatchesFound = strategy.GetTextLocations(pSearch, SC);
                         //Set the fill color of the shapes, I don't use a border because it would make the rect bigger
