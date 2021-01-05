@@ -18,6 +18,7 @@ namespace WordManipulateAPI.Models.EPFM
         public string DocumentTitle { get; set; }
         public string Revision { get; set; }
         public string CreationDate { get; set; }
+        public string ModifiedDate { get; set; }
         public string Package { get; set; }
         public string IssueReason { get; set; }
         public string Contract { get; set; }
