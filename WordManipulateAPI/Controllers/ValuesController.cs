@@ -21,7 +21,7 @@ namespace WordManipulateAPI.Controllers
     //[EnableCors(origins: "http://localhost:4200", headers: "*", methods: "*")]
     //[EnableCors(origins: "http://localhost:4200", headers: "*", methods: "*")]
     [EnableCors(origins: "*", headers: "*", methods: "*", SupportsCredentials =true)]
-    //[Authorize]
+    [Authorize]
     public class ValuesController : ApiController
     {
         static iTextSharp.text.pdf.PdfStamper stamper = null;
@@ -34,6 +34,7 @@ namespace WordManipulateAPI.Controllers
         {
             public string ExistingVariableinPDF { get; set; }
             public string ReplacingVariable { get; set; }
+            public string ReplacingDateVariable { get; set; }
             public string sourceFile { get; set; }
           
         }
@@ -72,6 +73,7 @@ namespace WordManipulateAPI.Controllers
             {
                 string ExistingVariableinPDF = updatePDF.ExistingVariableinPDF;
                 string ReplacingVariable = updatePDF.ReplacingVariable;
+                string ReplacingDateVariable = updatePDF.ReplacingDateVariable;
                 string sourceFile = @updatePDF.sourceFile;
 
                 FileInfo fileInfo = new FileInfo(sourceFile);
@@ -83,6 +85,8 @@ namespace WordManipulateAPI.Controllers
                 FileStream fileStream = new System.IO.FileStream(destFile, System.IO.FileMode.Create);
                 stamper = new iTextSharp.text.pdf.PdfStamper(pReader, fileStream);
                 PDFTextGetter(ExistingVariableinPDF, ReplacingVariable, StringComparison.CurrentCultureIgnoreCase, sourceFile, destFile);
+                if(!String.IsNullOrEmpty(ReplacingDateVariable))
+                PDFTextGetter(ReplacingDateVariable, DateTime.Now.DisplayWithSuffix(), StringComparison.CurrentCultureIgnoreCase, sourceFile, destFile);
 
                 stamper.Close();
                 stamper.Dispose();
@@ -604,5 +608,25 @@ private void ManipulatePdf(String src, String dest)
             return response;
         }
 
+    }
+
+    public static class extention
+    {
+        public static string DisplayWithSuffix(this DateTime givenDate)
+        {
+            int myday;
+            string strsuff = string.Empty;
+            string mynewdate = string.Empty;
+            strsuff = "th";
+            myday = givenDate.Day;
+            if (myday == 1 | myday == 21 | myday == 31)
+                strsuff = "st";
+            if (myday == 2 | myday == 22)
+                strsuff = "nd";
+            if (myday == 3 | myday == 23)
+                strsuff = "rd";
+            mynewdate = Convert.ToString(myday + "<sup>" + strsuff + "</sup> " + givenDate.ToString("MMMM yyyy"));
+            return mynewdate;
+        }
     }
 }
