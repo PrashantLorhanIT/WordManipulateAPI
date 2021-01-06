@@ -36,7 +36,8 @@ namespace WordManipulateAPI.Controllers
             public string ReplacingVariable { get; set; }
             public string ReplacingDateVariable { get; set; }
             public string sourceFile { get; set; }
-          
+            
+
         }
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route("api/GeneratePDFFileFromHtml")]
@@ -75,9 +76,10 @@ namespace WordManipulateAPI.Controllers
                 string ReplacingVariable = updatePDF.ReplacingVariable;
                 string ReplacingDateVariable = updatePDF.ReplacingDateVariable;
                 string sourceFile = @updatePDF.sourceFile;
+                Guid guid = Guid.NewGuid();
 
                 FileInfo fileInfo = new FileInfo(sourceFile);
-                string tempfilename = Path.Combine(fileInfo.Directory.FullName, ReplacingVariable + fileInfo.Extension);
+                string tempfilename = Path.Combine(fileInfo.Directory.FullName, guid.ToString() + fileInfo.Extension);
                 string destFile = @tempfilename;
 
                 PdfReader pReader = new PdfReader(sourceFile);
@@ -96,7 +98,7 @@ namespace WordManipulateAPI.Controllers
                 fileInfo.Refresh();
 
                 File.Delete(sourceFile);
-                response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+                response = Request.CreateResponse(System.Net.HttpStatusCode.OK, guid.ToString());
             }
             catch (Exception ex)
             {
@@ -148,7 +150,7 @@ namespace WordManipulateAPI.Controllers
                             cb2.SetColorFill(iTextSharp.text.BaseColor.BLACK);
                             bf = GetFont();
                             //bf = BaseFont.CreateFont(BaseFont.TIMES_BOLD, BaseFont.CP1252 , BaseFont.NOT_EMBEDDED);
-                            cb2.SetFontAndSize(bf, 9);
+                            cb2.SetFontAndSize(bf, 8);
                             cb2.BeginText();
                             cb2.ShowTextAligned(0, replacingText, rect.Left, rect.Bottom + 2, 0);
                             cb2.EndText();
@@ -625,7 +627,7 @@ private void ManipulatePdf(String src, String dest)
                 strsuff = "nd";
             if (myday == 3 | myday == 23)
                 strsuff = "rd";
-            mynewdate = Convert.ToString(myday + "<sup>" + strsuff + "</sup> " + givenDate.ToString("MMMM yyyy"));
+            mynewdate = Convert.ToString(myday + " " + givenDate.ToString("MMMM yyyy"));
             return mynewdate;
         }
     }
