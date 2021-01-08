@@ -133,9 +133,7 @@ namespace WordManipulateAPI.Controllers
             try
             {
                 string username, password;
-                //(username, password) = SecurityHelper.GetCredentials(User.Identity as ClaimsIdentity);
-                username = "svc.cmsadmintest";
-                password = "Jw$RNw%Ba2oC";
+                (username, password) = SecurityHelper.GetCredentials(User.Identity as ClaimsIdentity);
                 String repository = ConfigurationManager.AppSettings["EPFMRepository"];
                 //String username = ConfigurationManager.AppSettings["EPFMUsername"];
                 //String password = ConfigurationManager.AppSettings["EPFMPassword"];
