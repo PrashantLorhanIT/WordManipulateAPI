@@ -470,11 +470,11 @@ namespace WordManipulateAPI.Models.EPFM
                 operationOptions.ContentProfile = contentProfile;
                 operationOptions.SetProfile(contentProfile);
 
-                ObjectIdentitySet objectIdSet = new ObjectIdentitySet();
-                List<ObjectIdentity> objIdList = objectIdSet.Identities;
-                objIdList.Add(objectIdentity);
+                ObjectIdentitySet objectIdSet = new ObjectIdentitySet(objectIdentity);
+                //List<ObjectIdentity> objIdList = objectIdSet.Identities;
+                //objIdList.Add(objectIdentity);
 
-                DataPackage dataPackage = objectService.Get(objectIdSet, operationOptions);
+                DataPackage dataPackage = objectService.Get(objectIdSet, null);
                 DataObject dataObject = dataPackage.DataObjects[0];
 
                 Content resultContent = dataObject.Contents[0];

@@ -127,7 +127,7 @@ namespace WordManipulateAPI.Controllers
 
         [HttpGet]
         [Route("DownloadDocument")]
-        public IHttpActionResult DownloadDocument(string object_id, int RidType, string category, string SaveFilename, int attachsequence)
+        public IHttpActionResult DownloadDocument(string object_id, int RidType, string category, string SaveFilename, int attachsequence, string attachmentguid)
         {
             string result = "";
             try
@@ -172,7 +172,7 @@ namespace WordManipulateAPI.Controllers
                     try
                     {
                         string uri = ConfigurationManager.AppSettings["CoreMoveEPFMUri"] + "?RidType=" + RidType + "&category=" + 
-                                    category + "&Tmpfilename=" + fileInfo.FullName + "&SaveFileName=" + SaveFilename + "&attachsequence=" + attachsequence;
+                                    category + "&Tmpfilename=" + fileInfo.FullName + "&SaveFileName=" + SaveFilename + "&attachsequence=" + attachsequence + "&objectid=" + object_id + "&attachmentguid=" + attachmentguid;
                      
                         client.DefaultRequestHeaders.Authorization = ActionContext.Request.Headers.Authorization;
                         var responseTask = client.GetAsync(uri);
