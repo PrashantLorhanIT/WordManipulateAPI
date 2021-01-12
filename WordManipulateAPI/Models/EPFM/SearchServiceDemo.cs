@@ -136,10 +136,13 @@ namespace WordManipulateAPI.Models.EPFM
 
             List<DocumentModel> documentModels = new List<DocumentModel>();
             QueryResult queryResult;
+            var count = (dynamic)null;
             try
             {
                 //string queryString = "select dm_document.r_object_id, dm_document.subject, dm_document.a_content_type,dm_document.object_name,dm_format.dos_extension from dm_document,dm_format where  dm_document.a_content_type = dm_format.name";
                 //string queryString = " select r_object_id, eifx_deliverable_doc.r_modify_date, eifx_deliverable_doc.r_creation_date, object_name, title, eif_revision, er_package_name, eif_issue_reason, er_contract_number, eif_originator, eif_discipline, eif_acceptance_code, er_actual_sub_date from eifx_deliverable_doc ";
+
+                string queryStringCount = " select r_object_id from eifx_deliverable_doc,dm_document,dm_format where eifx_deliverable_doc.r_object_id = dm_document.r_object_id and dm_document.a_content_type = dm_format.name ";
 
 
                 string queryString = " select r_object_id ,title ,object_name,dm_document.r_creation_date as creationdate"
@@ -158,51 +161,61 @@ namespace WordManipulateAPI.Models.EPFM
                 if (!string.IsNullOrEmpty(search.ContractNumber))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " er_contract_number like '%" + search.ContractNumber + "%' ";
+                    queryStringCount = queryStringCount + (queryStringCount.Contains("where") ? " and " : " where ") + " er_contract_number like '%" + search.ContractNumber + "%' ";
                 }
 
                 if (!string.IsNullOrEmpty(search.DocumentNumber))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " object_name like '%" + search.DocumentNumber + "%' ";
+                    queryStringCount = queryStringCount + (queryStringCount.Contains("where") ? " and " : " where ") + " object_name like '%" + search.DocumentNumber + "%' ";
                 }
 
                 if (!string.IsNullOrEmpty(search.DocumentTitle))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " title like '%" + search.DocumentTitle + "%' ";
+                    queryStringCount = queryStringCount + (queryStringCount.Contains("where") ? " and " : " where ") + " title like '%" + search.DocumentTitle + "%' ";
                 }
 
                 if (!string.IsNullOrEmpty(search.PackageName))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.er_package_name like '%" + search.PackageName + "%' ";
+                    queryStringCount = queryStringCount + (queryStringCount.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.er_package_name like '%" + search.PackageName + "%' ";
                 }
 
                 if (!string.IsNullOrEmpty(search.DocumentType))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_type_of_doc like '%" + search.DocumentType + "%' ";
+                    queryStringCount = queryStringCount + (queryStringCount.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_type_of_doc like '%" + search.DocumentType + "%' ";
                 }
 
                 if (!string.IsNullOrEmpty(search.DocumentAcceptanceStatus))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_acceptance_code like '%" + search.DocumentAcceptanceStatus + "%' ";
+                    queryStringCount = queryStringCount + (queryStringCount.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_acceptance_code like '%" + search.DocumentAcceptanceStatus + "%' ";
                 }
 
                 if (!string.IsNullOrEmpty(search.Originator))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_originator like '%" + search.Originator + "%' ";
+                    queryStringCount = queryStringCount + (queryStringCount.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_originator like '%" + search.Originator + "%' ";
                 }
 
                 if (!string.IsNullOrEmpty(search.Area))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_area like '%" + search.Area + "%' ";
+                    queryStringCount = queryStringCount + (queryStringCount.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_area like '%" + search.Area + "%' ";
                 }
 
                 if (!string.IsNullOrEmpty(search.Revision))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_revision like '%" + search.Revision + "%' ";
+                    queryStringCount = queryStringCount + (queryStringCount.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_revision like '%" + search.Revision + "%' ";
                 }
 
                 if (!string.IsNullOrEmpty(search.Discipline))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_discipline like '%" + search.Discipline + "%' ";
+                    queryStringCount = queryStringCount + (queryStringCount.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_discipline like '%" + search.Discipline + "%' ";
                 }
 
                 ////if (!string.isnullorempty(search.filename))
@@ -213,11 +226,13 @@ namespace WordManipulateAPI.Models.EPFM
                 if (!string.IsNullOrEmpty(search.ProjectReference))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_project_ref like '%" + search.ProjectReference + "%' ";
+                    queryStringCount = queryStringCount + (queryStringCount.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_project_ref like '%" + search.ProjectReference + "%' ";
                 }
 
                 if (!string.IsNullOrEmpty(search.IssueReason))
                 {
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_issue_reason like '%" + search.IssueReason + "%' ";
+                    queryStringCount = queryStringCount + (queryStringCount.Contains("where") ? " and " : " where ") + " eifx_deliverable_doc.eif_issue_reason like '%" + search.IssueReason + "%' ";
                 }
 
                 ////if (!string.isnullorempty(search.supersearch))
@@ -296,109 +311,143 @@ namespace WordManipulateAPI.Models.EPFM
                         //type = type + " between " + search.DateRangeFrom.ToString("MM/dd/yyyy 00:00:00") + " and " + search.DateRangeFrom.ToString("MM/dd/yyyy 23:59:00");
                     }
                     queryString = queryString + (queryString.Contains("where") ? " and " : " where ") + type;
+                    queryStringCount = queryStringCount + (queryStringCount.Contains("where") ? " and " : " where ") + type;
                 }
 
 
 
 
-                int startingIndex = 0;
-                int maxResults = 20;
-                int maxResultsPerSource = 20;
+                int startingIndex = search.PageNumber;
+                int maxResults = search.PageSize;
+                int maxResultsPerSource = search.PageSize;
 
                 PassthroughQuery q = new PassthroughQuery();
+                PassthroughQuery qCount = new PassthroughQuery();
+
+                qCount.QueryString = queryStringCount;
+                qCount.AddRepository(DefaultRepository);
+
                 q.QueryString = queryString;
                 q.AddRepository(DefaultRepository);
+
+                QueryExecution queryExecCount = new QueryExecution();
+                QueryResult queryResultCount = searchService.Execute(qCount, queryExecCount, null);
+                DataPackage dpCount = queryResultCount.DataPackage;
+                count = dpCount.DataObjects.Count;
+
 
                 QueryExecution queryExec = new QueryExecution(startingIndex,
                                                               maxResults,
                                                               maxResultsPerSource);
                 queryExec.CacheStrategyType = CacheStrategyType.NO_CACHE_STRATEGY;
 
-                Logger.WriteLog("SearchDocuments 301 " + q);
+                while (true)
+                {
+                    queryResult = searchService.Execute(q, queryExec, null);
+                    //QueryResult queryResult = queryService.Execute(query, queryEx,
+                    //                                           operationOptions);
+                    QueryStatus queryStatus = queryResult.QueryStatus;
+                    RepositoryStatusInfo repStatusInfo = queryStatus.RepositoryStatusInfos[0];
+                    //Console.WriteLine("Query returned result successfully.");
+                    DataPackage dp = queryResult.DataPackage;
+                    //Console.WriteLine("DataPackage contains " + dp.DataObjects.Count + " objects.");
+                    Logger.WriteLog("SearchDocuments 322 " + dp.DataObjects.Count);
+
+                    if (repStatusInfo.Status == Status.FAILURE)
+                    {
+                        //  Console.WriteLine(repStatusInfo.ErrorTrace);
+                        documentModels.Add(new DocumentModel() { ObjectId = "0", ObjectName = repStatusInfo.ErrorMessage, DocumentTitle = repStatusInfo.Name, DocumentNumber = repStatusInfo.Name, TotalCount = 1 });
+                        break;
+                    }
+                    if(dp.DataObjects.Count == 0)
+                    {
+                        documentModels.Add(new DocumentModel() { ObjectId = "No Record", ObjectName = "No record", DocumentTitle = "No record", DocumentNumber = "No record", TotalCount = 0 });
+                        break;
+                    }
+
+                    foreach (DataObject dObj in dp.DataObjects)
+                    {
+                        PropertySet docProperties = dObj.Properties;
+                        //foreach (var item in docProperties.Properties)
+                        //{
+                        //    Logger.WriteLog("DataObjects " + item.Name);
+                        //}     
+
+                        String objectId = dObj.Identity.GetValueAsString();
+                        String docName = docProperties.Get("object_name").GetValueAsString();
+                        String Extension = "PDF"; //docProperties.Get("dos_extension").GetValueAsString();
+                        string repName = dObj.Identity.RepositoryName;
+
+                        string doctitle = docProperties.Get("title").GetValueAsString();
+
+                        string docNumber = docProperties.Get("object_name").GetValueAsString();
+
+                        //Console.WriteLine("RepositoryName: " + repName + " ,Document: " + objectId + " ,Name:" + docName + " ,Subject:" + docsubject);
+                        string revision = docProperties.Get("eif_revision").GetValueAsString();
+
+                        string creationDate = docProperties.Get("creationdate").GetValueAsString();
+
+                        string modifiedDate = docProperties.Get("modifydate").GetValueAsString();
+
+                        string package = docProperties.Get("er_package_name").GetValueAsString();
+
+                        string issueReason = docProperties.Get("eif_issue_reason").GetValueAsString();
+
+                        string contract = docProperties.Get("er_contract_number").GetValueAsString();
+
+                        string originator = docProperties.Get("eif_originator").GetValueAsString();
+
+                        string discipline = docProperties.Get("eif_discipline").GetValueAsString();
+
+                        string acceptanceCode = docProperties.Get("eif_acceptance_code").GetValueAsString();
+
+                        string actualSubDate = docProperties.Get("er_actual_sub_date").GetValueAsString();
+
+                        try
+                        {
+                            Logger.WriteLog("SearchDocuments Before er_actual_sub_date Date ");
+
+                            Logger.WriteLog("SearchDocuments Before er_actual_sub_date Date 1 ");
+                            //Logger.WriteLog("SearchDocuments r_creation_date " + docProperties.Get("r_creation_date").ToString());
+                            Logger.WriteLog("SearchDocuments er_actual_sub_date 2" + docProperties.Get("er_actual_sub_date").GetValueAsString());
+                            Logger.WriteLog("SearchDocuments after er_actual_sub_date Date ");
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.WriteLog("SearchDocuments r_creation_date Exception" + ex.Message);
+
+                        }
+
+
+                        documentModels.Add(new DocumentModel()
+                        {
+                            ObjectId = objectId,
+                            ObjectName = docName + "." + Extension,
+                            DocumentTitle = doctitle,
+                            DocumentNumber = docNumber,
+                            Revision = revision,
+                            AcceptanceCode = acceptanceCode,
+                            ActualSubDate = actualSubDate,
+                            Contract = contract,
+                            CreationDate = creationDate,
+                            ModifiedDate = modifiedDate,
+                            Discipline = discipline,
+                            IssueReason = issueReason,
+                            Originator = originator,
+                            Package = package,
+                            TotalCount = count
+                        });
+
+                    }
+                    //queryExec.StartingIndex += search.PageSize;
+                }
+
+                //Logger.WriteLog("SearchDocuments 301 " + q);
 
                 
-                queryResult = searchService.Execute(q, queryExec, null);
-                Logger.WriteLog("SearchDocuments 302 " + q);
+                //Logger.WriteLog("SearchDocuments 302 " + q);
 
-                QueryStatus queryStatus = queryResult.QueryStatus;
-                RepositoryStatusInfo repStatusInfo = queryStatus.RepositoryStatusInfos[0];
-                if (repStatusInfo.Status == Status.FAILURE)
-                {
-                    //  Console.WriteLine(repStatusInfo.ErrorTrace);
-                    documentModels.Add(new DocumentModel() { ObjectId = "0", ObjectName = repStatusInfo.ErrorMessage, DocumentTitle = repStatusInfo.Name, DocumentNumber = repStatusInfo.Name });
-                }
-                //Console.WriteLine("Query returned result successfully.");
-                DataPackage dp = queryResult.DataPackage;
-                //Console.WriteLine("DataPackage contains " + dp.DataObjects.Count + " objects.");
-                Logger.WriteLog("SearchDocuments 322 " + dp.DataObjects.Count);
-                foreach (DataObject dObj in dp.DataObjects)
-                {
-                    PropertySet docProperties = dObj.Properties;
-                    //foreach (var item in docProperties.Properties)
-                    //{
-                    //    Logger.WriteLog("DataObjects " + item.Name);
-                    //}     
-
-                    String objectId = dObj.Identity.GetValueAsString();
-                    String docName = docProperties.Get("object_name").GetValueAsString();
-                    String Extension = "PDF"; //docProperties.Get("dos_extension").GetValueAsString();
-                    string repName = dObj.Identity.RepositoryName;
-
-                    string doctitle = docProperties.Get("title").GetValueAsString();
-
-                    string docNumber = docProperties.Get("object_name").GetValueAsString();
-
-                    //Console.WriteLine("RepositoryName: " + repName + " ,Document: " + objectId + " ,Name:" + docName + " ,Subject:" + docsubject);
-                    string revision = docProperties.Get("eif_revision").GetValueAsString();
-
-                    string creationDate = docProperties.Get("creationdate").GetValueAsString();
-
-                    string modifiedDate = docProperties.Get("modifydate").GetValueAsString();
-
-                    string package = docProperties.Get("er_package_name").GetValueAsString();
-
-                    string issueReason = docProperties.Get("eif_issue_reason").GetValueAsString();
-
-                    string contract = docProperties.Get("er_contract_number").GetValueAsString();
-
-                    string originator = docProperties.Get("eif_originator").GetValueAsString();
-
-                    string discipline = docProperties.Get("eif_discipline").GetValueAsString();
-
-                    string acceptanceCode = docProperties.Get("eif_acceptance_code").GetValueAsString();
-
-                    string actualSubDate = docProperties.Get("er_actual_sub_date").GetValueAsString();
-
-                    try
-                    {
-                        Logger.WriteLog("SearchDocuments Before er_actual_sub_date Date ");
-
-                        Logger.WriteLog("SearchDocuments Before er_actual_sub_date Date 1 ");
-                        //Logger.WriteLog("SearchDocuments r_creation_date " + docProperties.Get("r_creation_date").ToString());
-                        Logger.WriteLog("SearchDocuments er_actual_sub_date 2" + docProperties.Get("er_actual_sub_date").GetValueAsString());
-                        Logger.WriteLog("SearchDocuments after er_actual_sub_date Date ");
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.WriteLog("SearchDocuments r_creation_date Exception" + ex.Message);
-
-                    }
-
-
-                    documentModels.Add(new DocumentModel() { ObjectId = objectId, ObjectName = docName + "." + Extension, DocumentTitle = doctitle, DocumentNumber = docNumber,
-                                                            Revision = revision,
-                                                            AcceptanceCode = acceptanceCode,
-                                                            ActualSubDate = actualSubDate,
-                                                            Contract = contract,
-                                                            CreationDate = creationDate,
-                                                            ModifiedDate = modifiedDate,
-                                                            Discipline = discipline,
-                                                            IssueReason = issueReason,
-                                                            Originator = originator,
-                                                            Package = package
-                    });
-
-                }
+               
             }
             catch (Exception ex)
             {
@@ -413,7 +462,8 @@ namespace WordManipulateAPI.Models.EPFM
                                                             Discipline = "FR8530498",
                                                             IssueReason = "Approved",
                                                             Originator = "Mark Boyle",
-                                                            Package = "DFGH54938"
+                                                            Package = "DFGH54938",
+                                                            TotalCount = 1
                 });
                 Logger.WriteLog("SearchDocuments searchServiceDemo " + ex.InnerException.ToString() + Environment.NewLine +
                     ex.GetBaseException().ToString() + Environment.NewLine +

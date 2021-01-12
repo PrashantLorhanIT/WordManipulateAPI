@@ -26,6 +26,7 @@ namespace WordManipulateAPI.Models.EPFM
         public string Discipline { get; set; }
         public string AcceptanceCode { get; set; }
         public string ActualSubDate { get; set; }
+        public decimal TotalCount { get; set; }
     }
 
     public class KeywordModel
@@ -73,5 +74,7 @@ namespace WordManipulateAPI.Models.EPFM
         public DateTime DateRangeTo { get; set; }
 
         public string SuperSearch { get; set; }
+        public int PageSize { get; set; }
+        public int PageNumber { get; set; }
     }
 }
