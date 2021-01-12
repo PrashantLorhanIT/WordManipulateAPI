@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using WordManipulateAPI.Controllers;
 
 namespace WordManipulateAPI.Controllers
 {
@@ -15,9 +16,16 @@ namespace WordManipulateAPI.Controllers
         {
             ViewBag.Title = "Home Page - testing";
 
+            //EPFMController oEPFMController = new EPFMController();
+
+            //DownloadContextDTO oDownloadContextDTO = new DownloadContextDTO();
+            //oDownloadContextDTO.object_id = "09005ba080c90e52";
+
+            //oDownloadContextDTO.attachmentguid
+            //oEPFMController.DownloadEPFMDocument(oDownloadContextDTO);
             return View();
         }
 
-     
+
     }
 }

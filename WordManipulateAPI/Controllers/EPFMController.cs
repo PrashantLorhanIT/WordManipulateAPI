@@ -125,9 +125,9 @@ namespace WordManipulateAPI.Controllers
             return documents;
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("DownloadDocument")]
-        public IHttpActionResult DownloadDocument(string object_id, int RidType, string category, string SaveFilename, int attachsequence, string attachmentguid)
+        public IHttpActionResult DownloadDocument(DownloadContextDTO Dto)
         {
             string result = "";
             try
@@ -139,7 +139,105 @@ namespace WordManipulateAPI.Controllers
                 //String password = ConfigurationManager.AppSettings["EPFMPassword"];
                 String address = ConfigurationManager.AppSettings["EPFMAddress"];
 
-             
+
+
+
+                ObjectServiceDemo objectService = new ObjectServiceDemo(repository, null, username, password, address);
+                //string object_id = "090181cd80054c37";
+                ObjectIdentity objIdentity =
+                               new ObjectIdentity(new Qualification("dm_document where r_object_id = '" + Dto.object_id + "'"),
+                                                  repository);
+
+                FileInfo fileInfo = null;
+                try
+                {
+                    fileInfo = objectService.GetWithContent(objIdentity, "Pleasanton", Emc.Documentum.FS.DataModel.Core.Content.ContentTransferMode.MTOM, Dto.object_id);
+                }
+                catch (Exception ex)
+                {
+                }
+                if (fileInfo == null)
+                {
+                    string TemplateFilePath = ConfigurationManager.AppSettings["TemplateFilePath"];
+                    string Fullpath = Path.Combine(TemplateFilePath, Dto.SaveFilename);
+                    StreamWriter sw = new StreamWriter(Fullpath, false);
+                    sw.WriteLine("This is a sample file created at " + DateTime.Now);
+                    sw.Close();
+                    fileInfo = new FileInfo(Fullpath);
+                }
+                MoveEPFMResultWrapper resultObj = null;
+                //
+                using (var client = new HttpClient())
+                {
+                    try
+                    {
+                        string uri = ConfigurationManager.AppSettings["CoreMoveEPFMUri"] + "?RidType=" + Dto.RidType + "&category=" +
+                                    Dto.category + "&Tmpfilename=" + fileInfo.FullName + "&SaveFileName=" + Dto.SaveFilename + "&attachsequence=" + Dto.attachsequence + "&objectid=" + Dto.object_id + "&attachmentguid=" + Dto.attachmentguid;
+
+                        client.DefaultRequestHeaders.Authorization = ActionContext.Request.Headers.Authorization;
+                        var responseTask = client.GetAsync(uri);
+                        responseTask.Wait();
+
+                        var httpresult = responseTask.Result;
+                        if (httpresult.IsSuccessStatusCode)
+                        {
+                            //var readTask = result.Content.ReadAsAsync<IList<StudentViewModel>>();
+                            var readTask = httpresult.Content.ReadAsAsync<MoveEPFMResultWrapper>();
+                            readTask.Wait();
+
+                            resultObj = readTask.Result;
+                            Logger.WriteLog(JsonConvert.SerializeObject(resultObj));
+
+                        }
+                        else
+                        {
+                            new Exception("ERCMS Core API failed" + httpresult.ReasonPhrase);
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.WriteLog("ERCMS Core API failed " + ex.Message + Environment.NewLine + ex.StackTrace);
+                        throw ex;
+                    }
+
+                }
+                return Content(HttpStatusCode.OK, resultObj);
+            }
+            catch (Exception ex)
+            {
+                result = result + "Got exception" + ex.StackTrace;
+                return Ok(ex.Message);
+            }
+
+        }
+
+
+        [HttpPost]
+        [Route("DownloadEPFMDocument")]
+        public IHttpActionResult DownloadEPFMDocument(DownloadContextDTO _DownloadContextDTO)
+        {
+            string object_id = _DownloadContextDTO.object_id;
+            int RidType = _DownloadContextDTO.RidType;
+            string category = _DownloadContextDTO.category;
+            string SaveFilename = _DownloadContextDTO.SaveFilename;
+            int attachsequence = _DownloadContextDTO.attachsequence;
+            string attachmentguid = _DownloadContextDTO.attachmentguid;
+
+            string result = "";
+            try
+            {
+                string username, password;
+                (username, password) = SecurityHelper.GetCredentials(User.Identity as ClaimsIdentity);
+
+                //username = "svc.cmsadmin";
+                //password = "Cw%6p7ZQM7D$";
+                String repository = ConfigurationManager.AppSettings["EPFMRepository"];
+                //String username = ConfigurationManager.AppSettings["EPFMUsername"];
+                //String password = ConfigurationManager.AppSettings["EPFMPassword"];
+                String address = ConfigurationManager.AppSettings["EPFMAddress"];
+
+
 
 
                 ObjectServiceDemo objectService = new ObjectServiceDemo(repository, null, username, password, address);
@@ -151,10 +249,10 @@ namespace WordManipulateAPI.Controllers
                 FileInfo fileInfo = null;
                 try
                 {
-                     fileInfo = objectService.GetWithContent(objIdentity, "Pleasanton", Emc.Documentum.FS.DataModel.Core.Content.ContentTransferMode.MTOM);
+                    fileInfo = objectService.GetWithContent(objIdentity, "Pleasanton", Emc.Documentum.FS.DataModel.Core.Content.ContentTransferMode.MTOM, object_id);
                 }
-                catch(Exception ex)
-                { 
+                catch (Exception ex)
+                {
                 }
                 if (fileInfo == null)
                 {
@@ -171,9 +269,9 @@ namespace WordManipulateAPI.Controllers
                 {
                     try
                     {
-                        string uri = ConfigurationManager.AppSettings["CoreMoveEPFMUri"] + "?RidType=" + RidType + "&category=" + 
+                        string uri = ConfigurationManager.AppSettings["CoreMoveEPFMUri"] + "?RidType=" + RidType + "&category=" +
                                     category + "&Tmpfilename=" + fileInfo.FullName + "&SaveFileName=" + SaveFilename + "&attachsequence=" + attachsequence + "&objectid=" + object_id + "&attachmentguid=" + attachmentguid;
-                     
+
                         client.DefaultRequestHeaders.Authorization = ActionContext.Request.Headers.Authorization;
                         var responseTask = client.GetAsync(uri);
                         responseTask.Wait();
@@ -189,10 +287,10 @@ namespace WordManipulateAPI.Controllers
                             Logger.WriteLog(JsonConvert.SerializeObject(resultObj));
 
                         }
-                        else 
+                        else
                         {
                             new Exception("ERCMS Core API failed" + httpresult.ReasonPhrase);
-                            
+
                         }
                     }
                     catch (Exception ex)
@@ -235,7 +333,7 @@ namespace WordManipulateAPI.Controllers
                 //keywords = searchServiceDemo.SimplePassthroughQueryForKeywords();
                 //result = "Setting Context";
 
-                QueryServiceDemo t = new QueryServiceDemo(repository, null , username, password, address);
+                QueryServiceDemo t = new QueryServiceDemo(repository, null, username, password, address);
                 keywords = t.callQueryServiceKeyword();
 
             }

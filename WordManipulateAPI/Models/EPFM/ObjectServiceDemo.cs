@@ -451,11 +451,16 @@ namespace WordManipulateAPI.Models.EPFM
             return dataPackage.DataObjects[0];
         }
 
-        public FileInfo GetWithContent(ObjectIdentity objectIdentity, String geoLoc, ContentTransferMode transferMode)
+        public FileInfo GetWithContent(ObjectIdentity objectIdentity, String geoLoc, ContentTransferMode transferMode, String objectID)
         {
             try
             {
-               // Console.WriteLine("GetWithContent");
+                // Console.WriteLine("GetWithContent");
+                //ObjectId objectId = new ObjectId(objectID);
+                //ObjectIdentity objectIdent = new ObjectIdentity(objectId, objectIdentity.RepositoryName);
+                //ObjectIdentitySet objectIdentitySet = new ObjectIdentitySet(objectIdent);
+                //DataPackage dataPackageas = objectService.Get(objectIdentitySet, null);
+
 
                 ContentTransferProfile transferProfile = new ContentTransferProfile();
                 transferProfile.Geolocation = geoLoc;
@@ -471,10 +476,10 @@ namespace WordManipulateAPI.Models.EPFM
                 operationOptions.SetProfile(contentProfile);
 
                 ObjectIdentitySet objectIdSet = new ObjectIdentitySet(objectIdentity);
-                //List<ObjectIdentity> objIdList = objectIdSet.Identities;
-                //objIdList.Add(objectIdentity);
+                List<ObjectIdentity> objIdList = objectIdSet.Identities;
+                objIdList.Add(objectIdentity);
 
-                DataPackage dataPackage = objectService.Get(objectIdSet, null);
+                DataPackage dataPackage = objectService.Get(objectIdSet, operationOptions);
                 DataObject dataObject = dataPackage.DataObjects[0];
 
                 Content resultContent = dataObject.Contents[0];
