@@ -313,7 +313,7 @@ namespace WordManipulateAPI.Models.EPFM
                 }
 
 
-                Logger.WriteLog("QueryStringCount is: " + queryStringCount);
+                //Logger.WriteLog("QueryStringCount is: " + queryStringCount);
 
 
                 int startingIndex = search.PageNumber;
@@ -334,7 +334,7 @@ namespace WordManipulateAPI.Models.EPFM
                 DataPackage dpCount = queryResultCount.DataPackage;
                 List<DataObject> dpCountObject = dpCount.DataObjects;
 
-                Logger.WriteLog("Total objects returned is: " + dpCountObject.Count);
+                //Logger.WriteLog("Total objects returned is: " + dpCountObject.Count);
                 int totalObjCount = 0;
                 foreach (DataObject dpCountObj in dpCountObject)
                 {
@@ -342,7 +342,7 @@ namespace WordManipulateAPI.Models.EPFM
 
                     totalObjCount = Convert.ToInt32(dpCountProperties.Get("totalcount").GetValueAsObject());
                 }
-                Logger.WriteLog("totalObjCount is " + totalObjCount);
+                //Logger.WriteLog("totalObjCount is " + totalObjCount);
 
                 QueryExecution queryExec = new QueryExecution(startingIndex,
                                                               maxResults,
@@ -357,7 +357,7 @@ namespace WordManipulateAPI.Models.EPFM
                     //Console.WriteLine("Query returned result successfully.");
                     DataPackage dp = queryResult.DataPackage;
                     //Console.WriteLine("DataPackage contains " + dp.DataObjects.Count + " objects.");
-                    Logger.WriteLog("SearchDocuments 353 " + dp.DataObjects.Count);
+                    //Logger.WriteLog("SearchDocuments 353 " + dp.DataObjects.Count);
 
                     if (repStatusInfo.Status == Status.FAILURE)
                     {
@@ -368,7 +368,7 @@ namespace WordManipulateAPI.Models.EPFM
                     if(dp.DataObjects.Count == 0)
                     {
                         //Logger.WriteLog("SearchDocuments 364 " + dp.DataObjects.Count);
-                        documentModels.Add(new DocumentModel() { ObjectId = "No Record", ObjectName = "No record", DocumentTitle = "No record", DocumentNumber = "No record", TotalCount = 0 });
+                        documentModels.Add(new DocumentModel() { ObjectId = "", ObjectName = "", DocumentTitle = "", DocumentNumber = "No record", TotalCount = 0 });
                     }
 
                     //Logger.WriteLog("SearchDocuments 364 " + dp.DataObjects.Count);
@@ -410,20 +410,20 @@ namespace WordManipulateAPI.Models.EPFM
 
                         string actualSubDate = docProperties.Get("er_actual_sub_date").GetValueAsString();
 
-                        try
-                        {
-                            Logger.WriteLog("SearchDocuments Before er_actual_sub_date Date ");
+                        //try
+                        //{
+                        //    Logger.WriteLog("SearchDocuments Before er_actual_sub_date Date ");
 
-                            Logger.WriteLog("SearchDocuments Before er_actual_sub_date Date 1 ");
-                            //Logger.WriteLog("SearchDocuments r_creation_date " + docProperties.Get("r_creation_date").ToString());
-                            Logger.WriteLog("SearchDocuments er_actual_sub_date 2" + docProperties.Get("er_actual_sub_date").GetValueAsString());
-                            Logger.WriteLog("SearchDocuments after er_actual_sub_date Date ");
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.WriteLog("SearchDocuments r_creation_date Exception" + ex.Message);
+                        //    Logger.WriteLog("SearchDocuments Before er_actual_sub_date Date 1 ");
+                        //    //Logger.WriteLog("SearchDocuments r_creation_date " + docProperties.Get("r_creation_date").ToString());
+                        //    Logger.WriteLog("SearchDocuments er_actual_sub_date 2" + docProperties.Get("er_actual_sub_date").GetValueAsString());
+                        //    Logger.WriteLog("SearchDocuments after er_actual_sub_date Date ");
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    Logger.WriteLog("SearchDocuments r_creation_date Exception" + ex.Message);
 
-                        }
+                        //}
 
 
                         documentModels.Add(new DocumentModel()
