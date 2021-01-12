@@ -172,7 +172,7 @@ namespace WordManipulateAPI.Controllers
                     try
                     {
                         string uri = ConfigurationManager.AppSettings["CoreMoveEPFMUri"] + "?RidType=" + Dto.RidType + "&category=" +
-                                    Dto.category + "&Tmpfilename=" + fileInfo.FullName + "&SaveFileName=" + Dto.SaveFilename + "&attachsequence=" + Dto.attachsequence + "&objectid=" + Dto.object_id + "&attachmentguid=" + Dto.attachmentguid;
+                                    Dto.category + "&Tmpfilename=" + fileInfo.FullName + "&SaveFilename=" + Dto.SaveFilename + "&attachsequence=" + Dto.attachsequence + "&objectid=" + Dto.object_id + "&attachmentguid=" + Dto.attachmentguid;
 
                         client.DefaultRequestHeaders.Authorization = ActionContext.Request.Headers.Authorization;
                         var responseTask = client.GetAsync(uri);
