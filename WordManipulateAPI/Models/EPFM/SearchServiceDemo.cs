@@ -135,14 +135,12 @@ namespace WordManipulateAPI.Models.EPFM
         {
 
             List<DocumentModel> documentModels = new List<DocumentModel>();
-            QueryResult queryResult;
-            var count = (dynamic)null;
             try
             {
                 //string queryString = "select dm_document.r_object_id, dm_document.subject, dm_document.a_content_type,dm_document.object_name,dm_format.dos_extension from dm_document,dm_format where  dm_document.a_content_type = dm_format.name";
                 //string queryString = " select r_object_id, eifx_deliverable_doc.r_modify_date, eifx_deliverable_doc.r_creation_date, object_name, title, eif_revision, er_package_name, eif_issue_reason, er_contract_number, eif_originator, eif_discipline, eif_acceptance_code, er_actual_sub_date from eifx_deliverable_doc ";
 
-                string queryStringCount = " select r_object_id from eifx_deliverable_doc,dm_document,dm_format where eifx_deliverable_doc.r_object_id = dm_document.r_object_id and dm_document.a_content_type = dm_format.name ";
+                string queryStringCount = " select count(r_object_id) as totalcount from eifx_deliverable_doc,dm_document,dm_format where eifx_deliverable_doc.r_object_id = dm_document.r_object_id and dm_document.a_content_type = dm_format.name ";
 
 
                 string queryString = " select r_object_id ,title ,object_name,dm_document.r_creation_date as creationdate"
@@ -315,6 +313,7 @@ namespace WordManipulateAPI.Models.EPFM
                 }
 
 
+                Logger.WriteLog("QueryStringCount is: " + queryStringCount);
 
 
                 int startingIndex = search.PageNumber;
@@ -330,11 +329,20 @@ namespace WordManipulateAPI.Models.EPFM
                 q.QueryString = queryString;
                 q.AddRepository(DefaultRepository);
 
-                QueryExecution queryExecCount = new QueryExecution();
+                QueryExecution queryExecCount = new QueryExecution(0,10,10);
                 QueryResult queryResultCount = searchService.Execute(qCount, queryExecCount, null);
                 DataPackage dpCount = queryResultCount.DataPackage;
-                count = dpCount.DataObjects.Count;
+                List<DataObject> dpCountObject = dpCount.DataObjects;
 
+                Logger.WriteLog("Total objects returned is: " + dpCountObject.Count);
+                int totalObjCount = 0;
+                foreach (DataObject dpCountObj in dpCountObject)
+                {
+                    PropertySet dpCountProperties = dpCountObj.Properties;
+
+                    totalObjCount = Convert.ToInt32(dpCountProperties.Get("totalcount").GetValueAsObject());
+                }
+                Logger.WriteLog("totalObjCount is " + totalObjCount);
 
                 QueryExecution queryExec = new QueryExecution(startingIndex,
                                                               maxResults,
@@ -343,7 +351,7 @@ namespace WordManipulateAPI.Models.EPFM
 
                 while (true)
                 {
-                    queryResult = searchService.Execute(q, queryExec, null);
+                   QueryResult queryResult = searchService.Execute(q, queryExec, null);
                     //QueryResult queryResult = queryService.Execute(query, queryEx,
                     //                                           operationOptions);
                     QueryStatus queryStatus = queryResult.QueryStatus;
@@ -351,20 +359,23 @@ namespace WordManipulateAPI.Models.EPFM
                     //Console.WriteLine("Query returned result successfully.");
                     DataPackage dp = queryResult.DataPackage;
                     //Console.WriteLine("DataPackage contains " + dp.DataObjects.Count + " objects.");
-                    Logger.WriteLog("SearchDocuments 322 " + dp.DataObjects.Count);
+                    Logger.WriteLog("SearchDocuments 353 " + dp.DataObjects.Count);
 
                     if (repStatusInfo.Status == Status.FAILURE)
                     {
+                        //Logger.WriteLog("SearchDocuments 357 " + repStatusInfo.Status);
                         //  Console.WriteLine(repStatusInfo.ErrorTrace);
                         documentModels.Add(new DocumentModel() { ObjectId = "0", ObjectName = repStatusInfo.ErrorMessage, DocumentTitle = repStatusInfo.Name, DocumentNumber = repStatusInfo.Name, TotalCount = 1 });
                         break;
                     }
                     if(dp.DataObjects.Count == 0)
                     {
+                        //Logger.WriteLog("SearchDocuments 364 " + dp.DataObjects.Count);
                         documentModels.Add(new DocumentModel() { ObjectId = "No Record", ObjectName = "No record", DocumentTitle = "No record", DocumentNumber = "No record", TotalCount = 0 });
                         break;
                     }
 
+                    //Logger.WriteLog("SearchDocuments 364 " + dp.DataObjects.Count);
                     foreach (DataObject dObj in dp.DataObjects)
                     {
                         PropertySet docProperties = dObj.Properties;
@@ -435,7 +446,7 @@ namespace WordManipulateAPI.Models.EPFM
                             IssueReason = issueReason,
                             Originator = originator,
                             Package = package,
-                            TotalCount = count
+                            TotalCount = totalObjCount
                         });
 
                     }
