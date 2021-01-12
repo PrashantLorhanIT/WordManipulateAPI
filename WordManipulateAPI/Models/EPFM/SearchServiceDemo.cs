@@ -349,8 +349,6 @@ namespace WordManipulateAPI.Models.EPFM
                                                               maxResultsPerSource);
                 queryExec.CacheStrategyType = CacheStrategyType.NO_CACHE_STRATEGY;
 
-                while (true)
-                {
                    QueryResult queryResult = searchService.Execute(q, queryExec, null);
                     //QueryResult queryResult = queryService.Execute(query, queryEx,
                     //                                           operationOptions);
@@ -366,13 +364,11 @@ namespace WordManipulateAPI.Models.EPFM
                         //Logger.WriteLog("SearchDocuments 357 " + repStatusInfo.Status);
                         //  Console.WriteLine(repStatusInfo.ErrorTrace);
                         documentModels.Add(new DocumentModel() { ObjectId = "0", ObjectName = repStatusInfo.ErrorMessage, DocumentTitle = repStatusInfo.Name, DocumentNumber = repStatusInfo.Name, TotalCount = 1 });
-                        break;
                     }
                     if(dp.DataObjects.Count == 0)
                     {
                         //Logger.WriteLog("SearchDocuments 364 " + dp.DataObjects.Count);
                         documentModels.Add(new DocumentModel() { ObjectId = "No Record", ObjectName = "No record", DocumentTitle = "No record", DocumentNumber = "No record", TotalCount = 0 });
-                        break;
                     }
 
                     //Logger.WriteLog("SearchDocuments 364 " + dp.DataObjects.Count);
@@ -451,7 +447,6 @@ namespace WordManipulateAPI.Models.EPFM
 
                     }
                     //queryExec.StartingIndex += search.PageSize;
-                }
 
                 //Logger.WriteLog("SearchDocuments 301 " + q);
 
