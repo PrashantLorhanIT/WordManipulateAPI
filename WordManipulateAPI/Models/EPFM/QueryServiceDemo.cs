@@ -122,7 +122,7 @@ namespace WordManipulateAPI.Models.EPFM
         {
             List<KeywordModel> lstKeywords = new List<KeywordModel>();
             PassthroughQuery query = new PassthroughQuery();
-            string queryString = "select distinct object_name, ecs_pl_category, ecs_short_val from ecs_picklist where any i_folder_id IN (select r_object_id from ecs_folder where FOLDER('/ECSCONFIG/Application Configuration',descend) and object_name like 'Active values')";
+            string queryString = "select distinct object_name, ecs_pl_category, ecs_short_val from ecs_picklist where any i_folder_id IN (select r_object_id from ecs_folder where FOLDER('/ECSCONFIG/Application Configuration',descend) and object_name like 'Active values') order by ecs_pl_category,object_name asc";
 
             //string queryString = "select distinct object_name, ecs_pl_category, ecs_short_val from ecs_picklist where ecs_pl_category in ('Type of Document', 'Acceptance Code', 'Area', 'Revision', 'Discipline', 'Contract Number', 'Project Reference', 'Issue Reason') and Folder('/ECSCONFIG/Application Configuration/ERL/03 Picklists/Current', descend)";
             //string queryString = "select r_object_id, object_name,subject from dm_document";
