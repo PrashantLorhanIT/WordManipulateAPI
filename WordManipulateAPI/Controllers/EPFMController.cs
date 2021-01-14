@@ -96,14 +96,56 @@ namespace WordManipulateAPI.Controllers
         {
             string result = "load";
             IEnumerable<DocumentModel> documents = null;
+            Usermaster resultObjUM = null;
+            string username, password;
+            (username, password) = SecurityHelper.GetCredentials(User.Identity as ClaimsIdentity);
+
             try
             {
+                using (var client = new HttpClient())
+                {
+                    try
+                    {
+                        string uri = ConfigurationManager.AppSettings["GetEPFMSettings"] + "?Username=" + username.Trim();
+
+                        client.DefaultRequestHeaders.Authorization = ActionContext.Request.Headers.Authorization;
+                        var responseTask = client.GetAsync(uri);
+                        responseTask.Wait();
+
+                        var httpresult = responseTask.Result;
+                        if (httpresult.IsSuccessStatusCode)
+                        {
+                            //var readTask = result.Content.ReadAsAsync<IList<StudentViewModel>>();
+                            var readTask = httpresult.Content.ReadAsAsync<Usermaster>();
+                            readTask.Wait();
+
+                            resultObjUM = readTask.Result.data;
+                            username = resultObjUM.Isaduser == "N" ? resultObjUM.EpfmUsername : username;
+                            password = resultObjUM.Isaduser == "N" ? resultObjUM.EpfmPassword : username;
+                            Logger.WriteLog(JsonConvert.SerializeObject(resultObjUM));
+
+                        }
+                        else
+                        {
+                            new Exception("ERCMS Core API failed" + httpresult.ReasonPhrase);
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.WriteLog("ERCMS Core API failed " + ex.Message + Environment.NewLine + ex.StackTrace);
+                        throw ex;
+                    }
+
+                }
+                
                 //string username, password;
-                //(username, password) =  SecurityHelper.GetCredentials(User.Identity as ClaimsIdentity);
+                                 //(username, password) =  SecurityHelper.GetCredentials(User.Identity as ClaimsIdentity);
+
 
                 String repository = ConfigurationManager.AppSettings["EPFMRepository"];
-                String username = ConfigurationManager.AppSettings["EPFMUsername"];
-                String password = ConfigurationManager.AppSettings["EPFMPassword"];
+                //String username = ConfigurationManager.AppSettings["EPFMUsername"];
+                //String password = ConfigurationManager.AppSettings["EPFMPassword"];
                 String address = ConfigurationManager.AppSettings["EPFMAddress"];
 
 
@@ -132,8 +174,47 @@ namespace WordManipulateAPI.Controllers
             string result = "";
             try
             {
+                Usermaster resultObjUM = null;
                 string username, password;
                 (username, password) = SecurityHelper.GetCredentials(User.Identity as ClaimsIdentity);
+
+                using (var client = new HttpClient())
+                {
+                    try
+                    {
+                        string uri = ConfigurationManager.AppSettings["GetEPFMSettings"] + "?Username=" + username.Trim();
+
+                        client.DefaultRequestHeaders.Authorization = ActionContext.Request.Headers.Authorization;
+                        var responseTask = client.GetAsync(uri);
+                        responseTask.Wait();
+
+                        var httpresult = responseTask.Result;
+                        if (httpresult.IsSuccessStatusCode)
+                        {
+                            //var readTask = result.Content.ReadAsAsync<IList<StudentViewModel>>();
+                            var readTask = httpresult.Content.ReadAsAsync<Usermaster>();
+                            readTask.Wait();
+
+                            resultObjUM = readTask.Result.data;
+                            username = resultObjUM.Isaduser == "N" ? resultObjUM.EpfmUsername : username;
+                            password = resultObjUM.Isaduser == "N" ? resultObjUM.EpfmPassword : username;
+                            Logger.WriteLog(JsonConvert.SerializeObject(resultObjUM));
+
+                        }
+                        else
+                        {
+                            new Exception("ERCMS Core API failed" + httpresult.ReasonPhrase);
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.WriteLog("ERCMS Core API failed " + ex.Message + Environment.NewLine + ex.StackTrace);
+                        throw ex;
+                    }
+
+                }
+
                 String repository = ConfigurationManager.AppSettings["EPFMRepository"];
                 //String username = ConfigurationManager.AppSettings["EPFMUsername"];
                 //String password = ConfigurationManager.AppSettings["EPFMPassword"];
@@ -317,10 +398,48 @@ namespace WordManipulateAPI.Controllers
         {
             string result = "load";
             IEnumerable<KeywordModel> keywords = null;
+            Usermaster resultObjUM = null;
             try
             {
                 string username, password;
                 (username, password) = SecurityHelper.GetCredentials(User.Identity as ClaimsIdentity);
+
+                using (var client = new HttpClient())
+                {
+                    try
+                    {
+                        string uri = ConfigurationManager.AppSettings["GetEPFMSettings"] + "?Username=" + username.Trim();
+
+                        client.DefaultRequestHeaders.Authorization = ActionContext.Request.Headers.Authorization;
+                        var responseTask = client.GetAsync(uri);
+                        responseTask.Wait();
+
+                        var httpresult = responseTask.Result;
+                        if (httpresult.IsSuccessStatusCode)
+                        {
+                            //var readTask = result.Content.ReadAsAsync<IList<StudentViewModel>>();
+                            var readTask = httpresult.Content.ReadAsAsync<Usermaster>();
+                            readTask.Wait();
+
+                            resultObjUM = readTask.Result.data;
+                            username = resultObjUM.Isaduser == "N" ? resultObjUM.EpfmUsername : username;
+                            password = resultObjUM.Isaduser == "N" ? resultObjUM.EpfmPassword : username;
+                            Logger.WriteLog(JsonConvert.SerializeObject(resultObjUM));
+
+                        }
+                        else
+                        {
+                            new Exception("ERCMS Core API failed" + httpresult.ReasonPhrase);
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.WriteLog("ERCMS Core API failed " + ex.Message + Environment.NewLine + ex.StackTrace);
+                        throw ex;
+                    }
+
+                }
 
                 String repository = ConfigurationManager.AppSettings["EPFMRepository"];
                 //String username = ConfigurationManager.AppSettings["EPFMUsername"];
