@@ -121,7 +121,7 @@ namespace WordManipulateAPI.Controllers
 
                             resultObjUM = readTask.Result.data;
                             username = resultObjUM.Isaduser == "N" ? resultObjUM.EpfmUsername : username;
-                            password = resultObjUM.Isaduser == "N" ? resultObjUM.EpfmPassword : username;
+                            password = resultObjUM.Isaduser == "N" ? resultObjUM.EpfmPassword : password;
                             Logger.WriteLog(JsonConvert.SerializeObject(resultObjUM));
 
                         }
@@ -197,7 +197,7 @@ namespace WordManipulateAPI.Controllers
 
                             resultObjUM = readTask.Result.data;
                             username = resultObjUM.Isaduser == "N" ? resultObjUM.EpfmUsername : username;
-                            password = resultObjUM.Isaduser == "N" ? resultObjUM.EpfmPassword : username;
+                            password = resultObjUM.Isaduser == "N" ? resultObjUM.EpfmPassword : password;
                             Logger.WriteLog(JsonConvert.SerializeObject(resultObjUM));
 
                         }
@@ -423,7 +423,7 @@ namespace WordManipulateAPI.Controllers
 
                             resultObjUM = readTask.Result.data;
                             username = resultObjUM.Isaduser == "N" ? resultObjUM.EpfmUsername : username;
-                            password = resultObjUM.Isaduser == "N" ? resultObjUM.EpfmPassword : username;
+                            password = resultObjUM.Isaduser == "N" ? resultObjUM.EpfmPassword : password;
                             Logger.WriteLog(JsonConvert.SerializeObject(resultObjUM));
 
                         }
